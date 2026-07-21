@@ -6,5 +6,4 @@
     build, and a GitHub Actions CI workflow — the capstone tying together
     everything from all four levels.
 
-Check the task ledger or ask your virtual employee for a status update on
-remaining content.
+More lessons are on the way — check back soon.
