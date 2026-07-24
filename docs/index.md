@@ -1,3 +1,8 @@
+---
+title: "Learn C++ Free: Beginner to Master Course"
+description: "Free C++ course from beginner to advanced -- hands-on lessons with runnable code and real capstone projects. Part of a 37-course free learning library."
+---
+
 # C++ Mastery Path
 
 A structured, module-wise C++ training program that takes you from your first
