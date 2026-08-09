@@ -1,0 +1,2748 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A structured, module-wise C++ training program from entry level to master level.">
+      
+      
+      
+        <link rel="canonical" href="https://sigilipelli.github.io/cpp-mastery-path/level-4/09-performance-at-scale/">
+      
+      
+        <link rel="prev" href="../08-testing-at-scale-ci/">
+      
+      
+        <link rel="next" href="../10-capstone-project/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>09 · Performance at Scale - C++ Mastery Path</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="C++ Mastery Path">
+  <meta property="og:title" content="09 · Performance at Scale">
+  <meta property="og:description" content="A structured, module-wise C++ training program from entry level to master level — free, with runnable code in every module.">
+  <meta property="og:url" content="https://sigilipelli.github.io/cpp-mastery-path/level-4/09-performance-at-scale/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="09 · Performance at Scale">
+  <meta name="twitter:description" content="A structured, module-wise C++ training program from entry level to master level — free, with runnable code in every module.">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9440969811959397"
+     crossorigin="anonymous"></script>
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#09-performance-at-scale" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="C++ Mastery Path" class="md-header__button md-logo" aria-label="C++ Mastery Path" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            C++ Mastery Path
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              09 · Performance at Scale
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SIGILIPELLI/cpp-mastery-path" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cpp-mastery-path
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../privacy/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Privacy Policy
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../level-1/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Level 1 · Entry
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../level-2/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Level 2 · Intermediate
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../level-3/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Level 3 · Advanced
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Level 4 · Master
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="C++ Mastery Path" class="md-nav__button md-logo" aria-label="C++ Mastery Path" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    C++ Mastery Path
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SIGILIPELLI/cpp-mastery-path" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cpp-mastery-path
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../privacy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Privacy Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../level-1/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Level 1 · Entry
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Level 1 · Entry
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/01-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · Setup & First Program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/02-variables-types-operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · Variables, Types & Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/03-control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/04-functions-overloading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · Functions & Overloading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/05-arrays-vector-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · Arrays & std::vector Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/06-strings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Strings (std::string)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/07-classes-objects/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · Classes & Objects Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/08-references-pointers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · References & Pointers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/09-exception-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · Exception Handling Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/10-project-bank-account-cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · Project — Bank Account CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../level-2/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Level 2 · Intermediate
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Level 2 · Intermediate
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/01-oop-deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · OOP Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/02-templates-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · Templates Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/03-stl-containers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · STL Containers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/04-stl-algorithms-iterators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · STL Algorithms & Iterators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/05-operator-overloading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · Operator Overloading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/06-smart-pointers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Smart Pointers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/07-file-io-streams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · File I/O & Streams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/08-error-handling-exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · Error Handling with Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/09-build-tools-cmake/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · Build Tools (CMake Basics)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/10-project-library-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · Project — Library Management System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../level-3/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Level 3 · Advanced
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Level 3 · Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/01-advanced-templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · Advanced Templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/02-move-semantics-rvalue-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · Move Semantics & Rvalue References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/03-concurrency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · Concurrency
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/04-raii-deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · RAII Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/05-design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · Design Patterns in C++
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/06-networking-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Networking Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/07-sqlite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · Working with SQLite from C++
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/08-testing-googletest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · Testing with Google Test
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/09-performance-profiling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · Performance Profiling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/10-project-task-processor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · Project — Multi-threaded Task Processor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Level 4 · Master
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Level 4 · Master
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-modern-cpp-features/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · Modern C++ Features (17/20)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-advanced-concurrency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · Advanced Concurrency
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-compile-time-computation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · Compile-time Computation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-systems-programming-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · Systems Programming Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-security-best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · Security Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-large-scale-build-systems/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Large-Scale Build Systems
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-cross-platform-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · Cross-platform Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-testing-at-scale-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · Testing at Scale & CI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · Performance at Scale
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · Performance at Scale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-number-that-explains-most-of-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The number that explains most of it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stride-the-same-data-walked-two-ways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stride: the same data, walked two ways
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pointer-chasing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pointer chasing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#false-sharing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        False sharing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#branch-misprediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branch misprediction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#allocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Allocation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallelism-in-increasing-order-of-effort" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallelism, in increasing order of effort
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whole-program-compiler-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Whole-program compiler optimizations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lock-contention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lock contention
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cheat sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-capstone-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · Capstone Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-number-that-explains-most-of-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The number that explains most of it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stride-the-same-data-walked-two-ways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stride: the same data, walked two ways
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pointer-chasing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pointer chasing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#false-sharing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        False sharing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#branch-misprediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branch misprediction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#allocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Allocation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallelism-in-increasing-order-of-effort" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallelism, in increasing order of effort
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whole-program-compiler-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Whole-program compiler optimizations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lock-contention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lock contention
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cheat sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="09-performance-at-scale">09 · Performance at Scale<a class="headerlink" href="#09-performance-at-scale" title="Permanent link">&para;</a></h1>
+<p><a href="../../level-3/09-performance-profiling/">Level 3 Module 9</a> covered how to
+measure. This module covers what the measurements usually turn out to be about.</p>
+<p>At master level the performance question stops being "which algorithm" and
+becomes "how does this code interact with the machine". A modern CPU executes
+several instructions per cycle and stalls for hundreds of cycles on a main-memory
+access. That ratio — roughly 200:1 — means <strong>most optimization at scale is
+memory optimization</strong>, and the biggest wins come from changing where data lives
+and how it is walked, not from clever arithmetic.</p>
+<h2 id="the-number-that-explains-most-of-it">The number that explains most of it<a class="headerlink" href="#the-number-that-explains-most-of-it" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Access</th>
+<th>Latency</th>
+<th>In "instructions you could have run"</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Register</td>
+<td>0 cycles</td>
+<td>—</td>
+</tr>
+<tr>
+<td>L1 cache</td>
+<td>~4 cycles</td>
+<td>~10</td>
+</tr>
+<tr>
+<td>L2 cache</td>
+<td>~12 cycles</td>
+<td>~40</td>
+</tr>
+<tr>
+<td>L3 cache</td>
+<td>~40 cycles</td>
+<td>~150</td>
+</tr>
+<tr>
+<td>Main memory</td>
+<td>~200+ cycles</td>
+<td>~800</td>
+</tr>
+<tr>
+<td>SSD read</td>
+<td>~100,000 cycles</td>
+<td>~400,000</td>
+</tr>
+</tbody>
+</table>
+<p>A cache line is 64 bytes on x86-64 and 64-128 on ARM. The CPU never fetches one
+value; it fetches the line. Every performance property below follows from those
+two facts.</p>
+<h2 id="stride-the-same-data-walked-two-ways">Stride: the same data, walked two ways<a class="headerlink" href="#stride-the-same-data-walked-two-ways" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4096</span><span class="p">;</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">);</span><span class="w">   </span><span class="c1">// 64 MB, row-major</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1">// stride 1: consecutive addresses</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">m</span><span class="p">[</span><span class="n">r</span><span class="o">*</span><span class="n">N</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">c</span><span class="p">];</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1">// stride N: 16 KB apart -- a new cache line every single access</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">m</span><span class="p">[</span><span class="n">r</span><span class="o">*</span><span class="n">N</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">c</span><span class="p">];</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>row-major traversal (stride 1)   : 32928 us
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>column-major traversal (stride N): 77836 us
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>same total: true
+</code></pre></div>
+<p>Identical additions, identical result, <strong>2.4x</strong> apart. Swapping two loop lines is
+the entire fix. On a matrix that doesn't fit in L3 at all, the gap widens to 5-10x.</p>
+<p>The general form: <strong>the innermost loop should walk the fastest-varying index of
+your layout.</strong> For genuinely large matrices, go further and process in tiles that
+fit in L2, so each loaded block is reused before eviction.</p>
+<h2 id="pointer-chasing">Pointer chasing<a class="headerlink" href="#pointer-chasing" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vec</span><span class="p">(</span><span class="mi">4&#39;000&#39;000</span><span class="p">);</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w">   </span><span class="n">lst</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">vec</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">vec</span><span class="p">)</span><span class="w"> </span><span class="n">s1</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">lst</span><span class="p">)</span><span class="w"> </span><span class="n">s2</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>std::vector traversal: 492 us
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>std::list   traversal: 15048 us
+</code></pre></div>
+<p><strong>30x.</strong> Both are O(n) with the same number of additions. The vector is one
+contiguous run the prefetcher can stream ahead of; the list is four million
+independent heap nodes, each requiring the previous load to <em>complete</em> before the
+next address is even known. That dependency chain is unhidable.</p>
+<p>This is why <code>std::vector</code> is the correct default container and <code>std::list</code> almost
+never is. Even for middle insertions, a vector's <code>memmove</code> usually beats a list's
+allocation and cache misses until the element count is very large. Measure the
+crossover on your data; it is much further out than intuition suggests.</p>
+<h2 id="false-sharing">False sharing<a class="headerlink" href="#false-sharing" title="Permanent link">&para;</a></h2>
+<p>Two threads writing to <em>different</em> variables that share a cache line force that
+line to bounce between cores. No data race, no incorrect result — just the
+coherence protocol destroying your scaling.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">Shared</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="w"> </span><span class="n">v</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w"> </span><span class="p">};</span><span class="w">                 </span><span class="c1">// 8 bytes: 8 per line</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">struct</span><span class="w"> </span><span class="nc">Padded</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">alignas</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="w"> </span><span class="n">v</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w"> </span><span class="p">};</span><span class="w">    </span><span class="c1">// one per line</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1">// 8 threads, each hammering ITS OWN counter, 20M increments</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Counter</span><span class="o">&gt;</span><span class="w"> </span><span class="n">counters</span><span class="p">(</span><span class="n">threads</span><span class="p">);</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">counters</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">v</span><span class="p">.</span><span class="n">fetch_add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>sizeof(Shared)=8  sizeof(Padded)=128
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>false sharing (packed): 1618 ms
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>padded to cache line  : 60 ms
+</code></pre></div>
+<p><strong>27x from one <code>alignas</code>.</strong> Each thread touches only its own counter; they are
+logically independent. But eight 8-byte counters land in one 64-byte line, so
+every increment on any core invalidates that line on all seven others.</p>
+<p>C++17 names the constant for you: <code>std::hardware_destructive_interference_size</code>.
+The rule of thumb — pad per-thread mutable state to a cache line, and prefer
+thread-local accumulation with a single merge at the end over shared counters
+entirely.</p>
+<h2 id="branch-misprediction">Branch misprediction<a class="headerlink" href="#branch-misprediction" title="Permanent link">&para;</a></h2>
+<p>A modern CPU speculates 15-20 instructions ahead. A mispredicted branch flushes
+that pipeline: 15-20 cycles wasted. In a tight loop over unpredictable data, that
+dominates.</p>
+<p>The mitigations, in order of preference:</p>
+<ol>
+<li><strong>Sort or partition the data</strong> so branches become predictable.</li>
+<li><strong>Make the branch branchless</strong>: <code>sum += x * (x &gt;= threshold)</code> or
+   <code>std::max(a, b)</code> compile to conditional moves.</li>
+<li><strong>Hoist the branch out of the loop</strong> — two specialized loops beat one loop
+   with an invariant <code>if</code> inside it.</li>
+<li><code>[[likely]]</code> / <code>[[unlikely]]</code> attributes (C++20) as a last resort, only where
+   profiling proved the distribution.</li>
+</ol>
+<p>Be warned that this is the area where benchmarks lie most readily: at <code>-O2</code> the
+vectorizer frequently converts the branchy loop into branchless SIMD by itself,
+and the classic "sorted array is faster" demonstration then shows no difference
+at all. Always check the generated assembly (<code>-S -masm=intel</code>, or Compiler
+Explorer) before concluding you outsmarted the compiler.</p>
+<h2 id="allocation">Allocation<a class="headerlink" href="#allocation" title="Permanent link">&para;</a></h2>
+<p><code>new</code> is a synchronized, general-purpose function that may take hundreds of
+nanoseconds. At scale, allocation count is a first-class metric.</p>
+<ul>
+<li><strong><code>reserve()</code> before a known-size fill.</strong> One allocation instead of <em>log n</em>
+  reallocations plus <em>n</em> moves.</li>
+<li><strong>Reuse buffers across iterations</strong> instead of constructing a fresh
+  <code>std::vector</code> per loop pass — hoist it out and <code>clear()</code> it (which keeps
+  capacity).</li>
+<li><strong>Small-buffer optimization</strong>: <code>std::string</code> stores ~15-22 characters inline
+  with no allocation at all. Staying under that threshold is free.</li>
+<li><strong>Arenas / <code>std::pmr</code></strong> for request-scoped or frame-scoped objects, as covered
+  in <a href="../04-systems-programming-patterns/">Module 4</a>.</li>
+<li><strong><code>emplace_back</code> over <code>push_back</code></strong> when constructing in place, to skip a move.</li>
+<li><strong><code>shrink_to_fit</code> is a request</strong>, not a command, and it reallocates. Rarely
+  worth it.</li>
+</ul>
+<p>Track allocations directly — Valgrind's massif, <code>heaptrack</code>, or simply
+overloading global <code>operator new</code> in a debug build to count calls. A 30% speedup
+from removing allocations in a hot path is routine.</p>
+<h2 id="parallelism-in-increasing-order-of-effort">Parallelism, in increasing order of effort<a class="headerlink" href="#parallelism-in-increasing-order-of-effort" title="Permanent link">&para;</a></h2>
+<p><strong>Parallel STL (C++17)</strong> is the cheapest parallelism in the language:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;execution&gt;</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">std</span><span class="o">::</span><span class="n">sort</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">execution</span><span class="o">::</span><span class="n">par_unseq</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">std</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">execution</span><span class="o">::</span><span class="n">par</span><span class="p">,</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="kt">double</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">reduce</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">execution</span><span class="o">::</span><span class="n">par</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span>
+</code></pre></div>
+<p><code>seq</code> / <code>par</code> / <code>par_unseq</code> / <code>unseq</code>. Note that <code>std::reduce</code> replaces
+<code>std::accumulate</code> here — <code>accumulate</code> is specified as strictly sequential
+left-fold, so it cannot be parallelized, and <code>reduce</code> requires your operation to
+be associative and commutative (which is why floating-point <code>reduce</code> may give
+slightly different results run to run). Support varies: libstdc++ needs Intel
+TBB linked, libc++ has been slower to ship it.</p>
+<p><strong>Vectorization (SIMD)</strong> is mostly the compiler's job. Help it by using
+contiguous data, avoiding loop-carried dependencies and aliasing, and building
+with <code>-O3 -march=native</code> where you control the deployment target. Check what
+happened with <code>-Rpass=loop-vectorize</code> (Clang) or
+<code>-fopt-info-vec-missed</code> (GCC) instead of guessing.</p>
+<p><strong>Threads</strong> for coarse-grained work, via the pool from
+<a href="../../level-3/10-project-task-processor/">Level 3 Module 10</a>. Amdahl's law is the
+governing constraint: if 10% of the work is serial, infinite cores give at most
+10x. Measure the serial fraction before adding threads.</p>
+<h2 id="whole-program-compiler-optimizations">Whole-program compiler optimizations<a class="headerlink" href="#whole-program-compiler-optimizations" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Effect</th>
+<th>Typical gain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-O2</code></td>
+<td>The sane default</td>
+<td>baseline</td>
+</tr>
+<tr>
+<td><code>-O3</code></td>
+<td>More aggressive inlining/unrolling</td>
+<td>0-10%, sometimes negative</td>
+</tr>
+<tr>
+<td><code>-march=native</code></td>
+<td>Use this CPU's instruction set</td>
+<td>5-20% on numeric code</td>
+</tr>
+<tr>
+<td><code>-flto</code></td>
+<td>Link-time optimization: inline across TUs</td>
+<td>5-15%</td>
+</tr>
+<tr>
+<td>PGO (<code>-fprofile-generate</code> → run → <code>-fprofile-use</code>)</td>
+<td>Lay out code by real branch frequencies</td>
+<td>10-20%</td>
+</tr>
+<tr>
+<td>BOLT / propeller</td>
+<td>Post-link binary layout</td>
+<td>5-15% on large binaries</td>
+</tr>
+</tbody>
+</table>
+<p>PGO is the most reliably underused of these. The workflow is three commands, and
+it gives the optimizer the one thing static analysis cannot have — knowledge of
+which branches actually run. <code>-march=native</code> is the dangerous one: the binary
+will <code>SIGILL</code> on any older CPU, so use explicit levels (<code>-march=x86-64-v2</code>) for
+distributed builds.</p>
+<h2 id="lock-contention">Lock contention<a class="headerlink" href="#lock-contention" title="Permanent link">&para;</a></h2>
+<p>An uncontended mutex is ~20 ns. A contended one is a syscall, a context switch,
+and a scheduler round trip. Fixes, in order:</p>
+<ol>
+<li><strong>Shrink the critical section</strong> — do the computation outside the lock, hold it
+   only for the update.</li>
+<li><strong>Shard</strong> — 64 mutexes indexed by <code>hash(key) % 64</code> instead of one.</li>
+<li><strong><code>std::shared_mutex</code></strong> when reads dominate (<a href="../02-advanced-concurrency/">Module 2</a>).</li>
+<li><strong>Thread-local accumulation</strong> with a periodic merge — no lock in the hot path.</li>
+<li><strong>Lock-free structures</strong> only when 1-4 are exhausted; they are extremely hard
+   to get right and often slower under low contention.</li>
+</ol>
+<h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Slow loop over a big array</td>
+<td>Wrong traversal order</td>
+<td>Match the loop order to memory layout</td>
+</tr>
+<tr>
+<td>Slow container traversal</td>
+<td>Pointer chasing</td>
+<td><code>vector</code> instead of <code>list</code>/<code>map</code></td>
+</tr>
+<tr>
+<td>Parallel code doesn't scale</td>
+<td>False sharing</td>
+<td><code>alignas(64)</code>, per-thread state</td>
+</tr>
+<tr>
+<td>Parallel code scales to a point</td>
+<td>Amdahl / lock contention</td>
+<td>Shard locks, shrink critical sections</td>
+</tr>
+<tr>
+<td>Time in <code>malloc</code></td>
+<td>Allocation churn</td>
+<td><code>reserve</code>, reuse buffers, arenas / <code>pmr</code></td>
+</tr>
+<tr>
+<td>High branch-miss rate</td>
+<td>Unpredictable data</td>
+<td>Sort, partition, or go branchless</td>
+</tr>
+<tr>
+<td>No SIMD in the hot loop</td>
+<td>Aliasing / dependencies</td>
+<td>Contiguous data, <code>-Rpass=loop-vectorize</code></td>
+</tr>
+<tr>
+<td>Fast micro, slow macro</td>
+<td>Optimized the wrong 2%</td>
+<td>Profile first, always</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>perf stat -e cache-misses,branch-misses</code></td>
+<td>Hardware counters — confirm the <em>cause</em></td>
+</tr>
+<tr>
+<td><code>perf record -g</code> / Instruments</td>
+<td>Where the time goes</td>
+</tr>
+<tr>
+<td><code>heaptrack</code> / <code>massif</code></td>
+<td>Where the allocations go</td>
+</tr>
+<tr>
+<td>Google Benchmark + <code>DoNotOptimize</code></td>
+<td>Regression-checked microbenchmarks</td>
+</tr>
+<tr>
+<td>Compiler Explorer / <code>-S</code></td>
+<td>What the compiler actually emitted</td>
+</tr>
+<tr>
+<td><code>-flto</code>, PGO, <code>-march=</code></td>
+<td>Free-ish whole-program wins</td>
+</tr>
+</tbody>
+</table>
+<h2 id="traps">Traps<a class="headerlink" href="#traps" title="Permanent link">&para;</a></h2>
+<p><strong>Optimizing without a profile.</strong> Still the number one mistake, and it gets worse
+at scale because large systems have less intuitive hot spots, not more.</p>
+<p><strong>Microbenchmarks that don't reflect production.</strong> A benchmark with data hot in
+L1 measures something your production code, whose data is cold, will never
+experience. Size the working set realistically.</p>
+<p><strong><code>-O3</code> assumed better than <code>-O2</code>.</strong> More inlining means a bigger binary, more
+instruction-cache pressure, and occasionally slower code. Measure both.</p>
+<p><strong><code>-march=native</code> in a shipped artifact.</strong> Illegal-instruction crashes on any
+machine older than your build host.</p>
+<p><strong>Parallelizing before removing the serial waste.</strong> Four threads doing
+unnecessary allocations is still slower than one thread doing none. Fix the
+single-threaded profile first — it also reduces the work you then have to
+coordinate.</p>
+<p><strong><code>std::accumulate</code> with <code>std::execution::par</code>.</strong> It compiles and silently stays
+sequential; the parallel spelling is <code>std::reduce</code>.</p>
+<p><strong>Assuming the vectorizer is on.</strong> Aliasing (two pointers the compiler cannot
+prove are distinct), loop-carried dependencies, and <code>volatile</code> all disable it.
+Ask the compiler with <code>-fopt-info-vec-missed</code> rather than assuming.</p>
+<p><strong>Padding everything to a cache line.</strong> False-sharing padding costs memory and
+cache capacity. Apply it to per-thread mutable state only, not to every struct.</p>
+<h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
+<p>Build a parallel word-frequency counter and drive it from 1x to as close to
+<em>N</em>x as you can, documenting every step with numbers.</p>
+<ol>
+<li><strong>Baseline</strong>: read a large text file (generate ~500 MB if you don't have
+   one), split on whitespace, count into a <code>std::map&lt;std::string, int&gt;</code>. Time it.</li>
+<li><strong>Container</strong>: switch to <code>std::unordered_map</code> with <code>reserve()</code>. Report the
+   ratio and explain which of the two changes mattered more.</li>
+<li><strong>Allocation</strong>: replace <code>std::string</code> keys built per word with
+   <code>std::string_view</code> into the file buffer (read the whole file once). Count
+   allocations before and after by overloading global <code>operator new</code>.</li>
+<li><strong>Parallel</strong>: split the buffer into <em>T</em> chunks at whitespace boundaries, count
+   each in its <strong>own</strong> map on its own thread, then merge. Plot speedup for
+   T = 1, 2, 4, 8, 16 and identify where it stops scaling.</li>
+<li><strong>False sharing</strong>: deliberately make all threads share one padded-vs-unpadded
+   <code>std::atomic&lt;long&gt;</code> total-word counter, and measure both. Confirm you can
+   reproduce a gap like the 27x above.</li>
+<li><strong>Compiler</strong>: rebuild the best version with <code>-flto</code>, then with PGO
+   (<code>-fprofile-generate</code>, run on a sample, <code>-fprofile-use</code>). Report both deltas.</li>
+<li><strong>Confirm the cause, not just the effect</strong>: run
+   <code>perf stat -e cache-misses,branch-misses,instructions</code> on the baseline and the
+   final version and show that the counters moved in the direction your
+   explanation predicts.</li>
+</ol>
+<p>Step 7 is what separates performance engineering from guessing that happened to
+work.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "content.code.copy", "content.code.annotate", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

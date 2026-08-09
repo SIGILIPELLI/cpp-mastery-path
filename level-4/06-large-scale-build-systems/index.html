@@ -1,0 +1,2701 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A structured, module-wise C++ training program from entry level to master level.">
+      
+      
+      
+        <link rel="canonical" href="https://sigilipelli.github.io/cpp-mastery-path/level-4/06-large-scale-build-systems/">
+      
+      
+        <link rel="prev" href="../05-security-best-practices/">
+      
+      
+        <link rel="next" href="../07-cross-platform-development/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>06 · Large-Scale Build Systems - C++ Mastery Path</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="C++ Mastery Path">
+  <meta property="og:title" content="06 · Large-Scale Build Systems">
+  <meta property="og:description" content="A structured, module-wise C++ training program from entry level to master level — free, with runnable code in every module.">
+  <meta property="og:url" content="https://sigilipelli.github.io/cpp-mastery-path/level-4/06-large-scale-build-systems/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="06 · Large-Scale Build Systems">
+  <meta name="twitter:description" content="A structured, module-wise C++ training program from entry level to master level — free, with runnable code in every module.">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9440969811959397"
+     crossorigin="anonymous"></script>
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#06-large-scale-build-systems" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="C++ Mastery Path" class="md-header__button md-logo" aria-label="C++ Mastery Path" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            C++ Mastery Path
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              06 · Large-Scale Build Systems
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SIGILIPELLI/cpp-mastery-path" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cpp-mastery-path
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../privacy/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Privacy Policy
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../level-1/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Level 1 · Entry
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../level-2/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Level 2 · Intermediate
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../level-3/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Level 3 · Advanced
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Level 4 · Master
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="C++ Mastery Path" class="md-nav__button md-logo" aria-label="C++ Mastery Path" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    C++ Mastery Path
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SIGILIPELLI/cpp-mastery-path" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cpp-mastery-path
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../privacy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Privacy Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../level-1/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Level 1 · Entry
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Level 1 · Entry
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/01-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · Setup & First Program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/02-variables-types-operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · Variables, Types & Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/03-control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/04-functions-overloading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · Functions & Overloading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/05-arrays-vector-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · Arrays & std::vector Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/06-strings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Strings (std::string)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/07-classes-objects/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · Classes & Objects Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/08-references-pointers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · References & Pointers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/09-exception-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · Exception Handling Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-1/10-project-bank-account-cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · Project — Bank Account CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../level-2/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Level 2 · Intermediate
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Level 2 · Intermediate
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/01-oop-deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · OOP Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/02-templates-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · Templates Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/03-stl-containers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · STL Containers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/04-stl-algorithms-iterators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · STL Algorithms & Iterators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/05-operator-overloading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · Operator Overloading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/06-smart-pointers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Smart Pointers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/07-file-io-streams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · File I/O & Streams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/08-error-handling-exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · Error Handling with Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/09-build-tools-cmake/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · Build Tools (CMake Basics)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-2/10-project-library-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · Project — Library Management System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../level-3/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Level 3 · Advanced
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Level 3 · Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/01-advanced-templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · Advanced Templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/02-move-semantics-rvalue-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · Move Semantics & Rvalue References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/03-concurrency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · Concurrency
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/04-raii-deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · RAII Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/05-design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · Design Patterns in C++
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/06-networking-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Networking Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/07-sqlite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · Working with SQLite from C++
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/08-testing-googletest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · Testing with Google Test
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/09-performance-profiling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · Performance Profiling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../level-3/10-project-task-processor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · Project — Multi-threaded Task Processor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Level 4 · Master
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Level 4 · Master
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-modern-cpp-features/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · Modern C++ Features (17/20)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-advanced-concurrency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · Advanced Concurrency
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-compile-time-computation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · Compile-time Computation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-systems-programming-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · Systems Programming Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-security-best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · Security Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Large-Scale Build Systems
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Large-Scale Build Systems
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a-properly-structured-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A properly structured project
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-private-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PUBLIC, PRIVATE, INTERFACE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting dependencies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#making-your-library-installable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Making your library installable
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#presets-reproducible-configurations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Presets — reproducible configurations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#making-builds-fast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Making builds fast
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c20-modules-briefly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C++20 modules, briefly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cheat sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-cross-platform-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · Cross-platform Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-testing-at-scale-ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · Testing at Scale & CI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-performance-at-scale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · Performance at Scale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-capstone-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · Capstone Project
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a-properly-structured-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A properly structured project
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-private-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PUBLIC, PRIVATE, INTERFACE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting dependencies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#making-your-library-installable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Making your library installable
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#presets-reproducible-configurations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Presets — reproducible configurations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#making-builds-fast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Making builds fast
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c20-modules-briefly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C++20 modules, briefly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cheat sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="06-large-scale-build-systems">06 · Large-Scale Build Systems<a class="headerlink" href="#06-large-scale-build-systems" title="Permanent link">&para;</a></h1>
+<p><a href="../../level-2/09-build-tools-cmake/">Level 2 Module 9</a> introduced CMake as a way
+to stop typing <code>g++</code> by hand. At scale the build system becomes something else:
+the thing that decides whether a change takes 4 seconds or 40 minutes to
+validate, whether your library is usable by anyone else, and whether "works on
+my machine" is a joke or a support burden.</p>
+<p>The single idea that organizes modern CMake is <strong>targets carry their own
+requirements</strong>. A target knows its include directories, its compile features,
+its definitions and its dependencies; anything that links it inherits the public
+ones automatically. Global <code>include_directories()</code> and
+<code>set(CMAKE_CXX_FLAGS ...)</code> are the old way and they do not compose.</p>
+<h2 id="a-properly-structured-project">A properly structured project<a class="headerlink" href="#a-properly-structured-project" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mathlib/
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    CMakeLists.txt
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    include/mathlib/stats.h     # the public API -- note the namespaced subdir
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    src/stats.cpp
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    app/main.cpp
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    tests/test_stats.cpp
+</code></pre></div>
+<p><code>include/mathlib/stats.h</code> rather than <code>include/stats.h</code> is deliberate: consumers
+write <code>#include "mathlib/stats.h"</code>, which cannot collide with another library's
+<code>stats.h</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">3.20</span><span class="p">)</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">project</span><span class="p">(</span><span class="s">mathlib</span><span class="w"> </span><span class="s">VERSION</span><span class="w"> </span><span class="s">1.2.0</span><span class="w"> </span><span class="s">LANGUAGES</span><span class="w"> </span><span class="s">CXX</span><span class="p">)</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_CXX_STANDARD</span><span class="w"> </span><span class="s">20</span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_CXX_STANDARD_REQUIRED</span><span class="w"> </span><span class="s">ON</span><span class="p">)</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_CXX_EXTENSIONS</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span><span class="w">          </span><span class="c"># -std=c++20, not -std=gnu++20</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_EXPORT_COMPILE_COMMANDS</span><span class="w"> </span><span class="s">ON</span><span class="p">)</span><span class="w">  </span><span class="c"># compile_commands.json for clangd/clang-tidy</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="nb">add_library</span><span class="p">(</span><span class="s">mathlib</span><span class="w"> </span><span class="s">src/stats.cpp</span><span class="p">)</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nb">add_library</span><span class="p">(</span><span class="s">mathlib::mathlib</span><span class="w"> </span><span class="s">ALIAS</span><span class="w"> </span><span class="s">mathlib</span><span class="p">)</span><span class="w">   </span><span class="c"># same name in-tree and installed</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="nb">target_include_directories</span><span class="p">(</span><span class="s">mathlib</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="s">PUBLIC</span><span class="w">  </span><span class="o">$&lt;</span><span class="nv">BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include</span><span class="o">&gt;</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">            </span><span class="o">$&lt;</span><span class="nv">INSTALL_INTERFACE:include</span><span class="o">&gt;</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">src</span><span class="p">)</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="nb">target_compile_features</span><span class="p">(</span><span class="s">mathlib</span><span class="w"> </span><span class="s">PUBLIC</span><span class="w"> </span><span class="s">cxx_std_20</span><span class="p">)</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="nb">target_compile_options</span><span class="p">(</span><span class="s">mathlib</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">-Wall</span><span class="w"> </span><span class="s">-Wextra</span><span class="w"> </span><span class="s">-Wpedantic</span><span class="p">)</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="nb">add_executable</span><span class="p">(</span><span class="s">statsapp</span><span class="w"> </span><span class="s">app/main.cpp</span><span class="p">)</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">statsapp</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">mathlib::mathlib</span><span class="p">)</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="nb">option</span><span class="p">(</span><span class="s">MATHLIB_BUILD_TESTS</span><span class="w"> </span><span class="s2">&quot;Build the test suite&quot;</span><span class="w"> </span><span class="s">ON</span><span class="p">)</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="nb">if</span><span class="p">(</span><span class="s">MATHLIB_BUILD_TESTS</span><span class="p">)</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">    </span><span class="nb">enable_testing</span><span class="p">()</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">    </span><span class="nb">find_package</span><span class="p">(</span><span class="s">GTest</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">    </span><span class="nb">add_executable</span><span class="p">(</span><span class="s">test_stats</span><span class="w"> </span><span class="s">tests/test_stats.cpp</span><span class="p">)</span>
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">    </span><span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">test_stats</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">mathlib::mathlib</span><span class="w"> </span><span class="s">GTest::gtest</span><span class="w"> </span><span class="s">GTest::gtest_main</span><span class="p">)</span>
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">    </span><span class="nb">include</span><span class="p">(</span><span class="s">GoogleTest</span><span class="p">)</span>
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">    </span><span class="nb">gtest_discover_tests</span><span class="p">(</span><span class="s">test_stats</span><span class="p">)</span><span class="w">   </span><span class="c"># registers each TEST() with CTest individually</span>
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="nb">endif</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>cmake<span class="w"> </span>--build<span class="w"> </span>build
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>-- Found GTest: /opt/homebrew/lib/cmake/GTest/GTestConfig.cmake (found version &quot;1.17.0&quot;)
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>-- Configuring done (0.6s)
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>-- Generating done (0.0s)
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>[ 16%] Building CXX object CMakeFiles/mathlib.dir/src/stats.cpp.o
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>[ 33%] Linking CXX static library libmathlib.a
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>[ 50%] Building CXX object CMakeFiles/statsapp.dir/app/main.cpp.o
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>[ 66%] Linking CXX executable statsapp
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>[ 83%] Building CXX object CMakeFiles/test_stats.dir/tests/test_stats.cpp.o
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>[100%] Linking CXX executable test_stats
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">cd</span><span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ctest<span class="w"> </span>--output-on-failure
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>    Start 1: StatsTest.MeanOfKnownSet
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>1/3 Test #1: StatsTest.MeanOfKnownSet .........   Passed    0.00 sec
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    Start 2: StatsTest.StddevOfKnownSet
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>2/3 Test #2: StatsTest.StddevOfKnownSet .......   Passed    0.00 sec
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    Start 3: StatsTest.EmptyThrows
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>3/3 Test #3: StatsTest.EmptyThrows ............   Passed    0.00 sec
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>100% tests passed out of 3
+</code></pre></div>
+<p><code>gtest_discover_tests</code> runs the test binary at build time with
+<code>--gtest_list_tests</code> and registers every case as its own CTest entry, so
+<code>ctest -j8</code> parallelizes across test <em>cases</em> and a failure names the case
+directly.</p>
+<h2 id="public-private-interface">PUBLIC, PRIVATE, INTERFACE<a class="headerlink" href="#public-private-interface" title="Permanent link">&para;</a></h2>
+<p>This is the concept that makes large builds tractable, and it is about
+<strong>propagation</strong>, not access control.</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th style="text-align: center;">Used when building the target</th>
+<th style="text-align: center;">Propagated to consumers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PRIVATE</code></td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">no</td>
+</tr>
+<tr>
+<td><code>PUBLIC</code></td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td><code>INTERFACE</code></td>
+<td style="text-align: center;">no</td>
+<td style="text-align: center;">yes</td>
+</tr>
+</tbody>
+</table>
+<p>If <code>stats.h</code> includes <code>&lt;Eigen/Dense&gt;</code>, Eigen is <code>PUBLIC</code> — anyone including your
+header needs it too. If only <code>stats.cpp</code> includes it, it is <code>PRIVATE</code>, and your
+consumers never see it. Getting this wrong in the permissive direction
+(everything <code>PUBLIC</code>) is how a 20-target project ends up with every target
+depending on every header in the repo, and a one-line change rebuilding
+everything.</p>
+<h2 id="getting-dependencies">Getting dependencies<a class="headerlink" href="#getting-dependencies" title="Permanent link">&para;</a></h2>
+<p>Three mainstream answers, in increasing order of control:</p>
+<p><strong>FetchContent</strong> — CMake downloads and builds the dependency as part of your
+build. Zero setup for the user, at the cost of rebuilding it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">include</span><span class="p">(</span><span class="s">FetchContent</span><span class="p">)</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">FetchContent_Declare</span><span class="p">(</span><span class="s">googletest</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="s">GIT_REPOSITORY</span><span class="w"> </span><span class="s">https://github.com/google/googletest.git</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="s">GIT_TAG</span><span class="w">        </span><span class="s">v1.17.0</span><span class="p">)</span><span class="w">          </span><span class="c"># always pin a TAG, never a branch</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="nb">FetchContent_MakeAvailable</span><span class="p">(</span><span class="s">googletest</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>vcpkg / Conan</strong> — a real package manager with binary caching:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>vcpkg<span class="w"> </span>install<span class="w"> </span>fmt<span class="w"> </span>spdlog<span class="w"> </span>gtest
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DCMAKE_TOOLCHAIN_FILE<span class="o">=</span><span class="nv">$VCPKG_ROOT</span>/scripts/buildsystems/vcpkg.cmake
+</code></pre></div>
+<p><strong><code>find_package</code></strong> against a system or pre-built install — fastest, but you own
+provisioning it.</p>
+<p>Whichever you choose, the consumption side is identical:
+<code>target_link_libraries(app PRIVATE GTest::gtest)</code>. That is the payoff of
+imported targets.</p>
+<h2 id="making-your-library-installable">Making your library installable<a class="headerlink" href="#making-your-library-installable" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nb">include</span><span class="p">(</span><span class="s">GNUInstallDirs</span><span class="p">)</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">include</span><span class="p">(</span><span class="s">CMakePackageConfigHelpers</span><span class="p">)</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="nb">install</span><span class="p">(</span><span class="s">TARGETS</span><span class="w"> </span><span class="s">mathlib</span><span class="w"> </span><span class="s">EXPORT</span><span class="w"> </span><span class="s">mathlibTargets</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">        </span><span class="s">ARCHIVE</span><span class="w"> </span><span class="s">DESTINATION</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_INSTALL_LIBDIR</span><span class="o">}</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">        </span><span class="s">LIBRARY</span><span class="w"> </span><span class="s">DESTINATION</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_INSTALL_LIBDIR</span><span class="o">}</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">        </span><span class="s">RUNTIME</span><span class="w"> </span><span class="s">DESTINATION</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_INSTALL_BINDIR</span><span class="o">}</span><span class="p">)</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="nb">install</span><span class="p">(</span><span class="s">DIRECTORY</span><span class="w"> </span><span class="s">include/</span><span class="w"> </span><span class="s">DESTINATION</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_INSTALL_INCLUDEDIR</span><span class="o">}</span><span class="p">)</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="nb">install</span><span class="p">(</span><span class="s">EXPORT</span><span class="w"> </span><span class="s">mathlibTargets</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">        </span><span class="s">FILE</span><span class="w"> </span><span class="s">mathlibTargets.cmake</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">        </span><span class="s">NAMESPACE</span><span class="w"> </span><span class="s">mathlib::</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">        </span><span class="s">DESTINATION</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_INSTALL_LIBDIR</span><span class="o">}</span><span class="s">/cmake/mathlib</span><span class="p">)</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="nb">write_basic_package_version_file</span><span class="p">(</span><span class="s">mathlibConfigVersion.cmake</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="w">        </span><span class="s">VERSION</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_VERSION</span><span class="o">}</span><span class="w"> </span><span class="s">COMPATIBILITY</span><span class="w"> </span><span class="s">SameMajorVersion</span><span class="p">)</span>
+</code></pre></div>
+<p>Now a downstream project writes <code>find_package(mathlib 1.2 REQUIRED)</code> and
+<code>target_link_libraries(theirs PRIVATE mathlib::mathlib)</code>, and the
+<code>$&lt;INSTALL_INTERFACE:include&gt;</code> from earlier is what makes the include path
+correct in the installed layout. The <code>BUILD_INTERFACE</code>/<code>INSTALL_INTERFACE</code>
+generator-expression pair exists precisely because those two paths differ.</p>
+<h2 id="presets-reproducible-configurations">Presets — reproducible configurations<a class="headerlink" href="#presets-reproducible-configurations" title="Permanent link">&para;</a></h2>
+<p><code>CMakePresets.json</code> replaces the wiki page of <code>cmake -D...</code> incantations that
+every large project accumulates:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span><span class="nt">&quot;configurePresets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dev&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;generator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ninja&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;binaryDir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;build/dev&quot;</span><span class="p">,</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">      </span><span class="nt">&quot;cacheVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;CMAKE_BUILD_TYPE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Debug&quot;</span><span class="p">,</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">                          </span><span class="nt">&quot;CMAKE_EXPORT_COMPILE_COMMANDS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ON&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;asan&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;inherits&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dev&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;binaryDir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;build/asan&quot;</span><span class="p">,</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">      </span><span class="nt">&quot;cacheVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;CMAKE_CXX_FLAGS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;-fsanitize=address,undefined -g&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;release&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;inherits&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dev&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;binaryDir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;build/release&quot;</span><span class="p">,</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">      </span><span class="nt">&quot;cacheVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;CMAKE_BUILD_TYPE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RelWithDebInfo&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">  </span><span class="p">]</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>cmake<span class="w"> </span>--preset<span class="w"> </span>asan<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>cmake<span class="w"> </span>--build<span class="w"> </span>--preset<span class="w"> </span>asan<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ctest<span class="w"> </span>--preset<span class="w"> </span>asan
+</code></pre></div>
+<p>CI and developers now run byte-identical configurations, which is the only way
+"it passes locally" stays meaningful.</p>
+<h2 id="making-builds-fast">Making builds fast<a class="headerlink" href="#making-builds-fast" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Technique</th>
+<th>Typical effect</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ninja generator</strong> (<code>-G Ninja</code>)</td>
+<td>10-30% over Make; far better incremental</td>
+<td>none</td>
+</tr>
+<tr>
+<td><strong>ccache / sccache</strong></td>
+<td>Near-instant rebuild of unchanged TUs across branches</td>
+<td>disk</td>
+</tr>
+<tr>
+<td><strong>Precompiled headers</strong> (<code>target_precompile_headers</code>)</td>
+<td>Large win on STL-heavy code</td>
+<td>can hide missing includes</td>
+</tr>
+<tr>
+<td><strong>Unity builds</strong> (<code>CMAKE_UNITY_BUILD</code>)</td>
+<td>2-4x on full builds</td>
+<td>worse incremental; ODR surprises</td>
+</tr>
+<tr>
+<td><strong>Forward declarations &amp; PIMPL</strong></td>
+<td>Cuts the rebuild <em>fan-out</em></td>
+<td>design effort</td>
+</tr>
+<tr>
+<td><strong><code>-fvisibility=hidden</code></strong></td>
+<td>Smaller, faster-linking shared libraries</td>
+<td>must export explicitly</td>
+</tr>
+<tr>
+<td><strong><code>mold</code> / <code>lld</code> linker</strong></td>
+<td>Link time from tens of seconds to ~1</td>
+<td>none</td>
+</tr>
+<tr>
+<td><strong><code>include-what-you-use</code></strong></td>
+<td>Removes transitive header bloat at the source</td>
+<td>churn</td>
+</tr>
+</tbody>
+</table>
+<p>The most valuable of these is not a flag. <strong>The dependency graph of your headers
+is your build time.</strong> A widely-included header that pulls in <code>&lt;regex&gt;</code> costs
+every translation unit in the project; the fix is forward declaration and
+<a href="../04-systems-programming-patterns/">PIMPL</a>, not a faster machine.</p>
+<p>Measure before optimizing here too — Clang's <code>-ftime-trace</code> emits a Chrome
+trace per TU showing exactly which header and which template instantiation ate
+the seconds.</p>
+<h2 id="c20-modules-briefly">C++20 modules, briefly<a class="headerlink" href="#c20-modules-briefly" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1">// stats.cppm</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="k">export</span><span class="w"> </span><span class="k">module</span><span class="w"> </span><span class="n">mathlib</span><span class="p">.</span><span class="n">stats</span><span class="p">;</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="k">import</span><span class="w"> </span><span class="o">&lt;</span><span class="n">vector</span><span class="o">&gt;</span><span class="p">;</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="k">export</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">mathlib</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">v</span><span class="p">);</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nb">target_sources</span><span class="p">(</span><span class="s">mathlib</span><span class="w"> </span><span class="s">PUBLIC</span><span class="w"> </span><span class="s">FILE_SET</span><span class="w"> </span><span class="s">CXX_MODULES</span><span class="w"> </span><span class="s">FILES</span><span class="w"> </span><span class="s">src/stats.cppm</span><span class="p">)</span>
+</code></pre></div>
+<p>Modules replace textual inclusion with a compiled interface, which eliminates
+both header-parsing cost and macro leakage. Support arrived in CMake 3.28 with
+Ninja 1.11+ and recent Clang/GCC/MSVC, and it works — but tooling around it
+(static analyzers, older CI images, third-party libraries that still ship
+headers) is still catching up. Know what they are; adopt them when your whole
+toolchain is ready, not before.</p>
+<h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>target_include_directories(t PUBLIC …)</code></td>
+<td>Include paths that propagate to consumers</td>
+</tr>
+<tr>
+<td><code>target_link_libraries(t PRIVATE dep::dep)</code></td>
+<td>Link + inherit dep's public requirements</td>
+</tr>
+<tr>
+<td><code>target_compile_features(t PUBLIC cxx_std_20)</code></td>
+<td>Require a standard, propagate the requirement</td>
+</tr>
+<tr>
+<td><code>add_library(ns::name ALIAS name)</code></td>
+<td>Same target name in-tree and after install</td>
+</tr>
+<tr>
+<td><code>$&lt;BUILD_INTERFACE:…&gt;</code> / <code>$&lt;INSTALL_INTERFACE:…&gt;</code></td>
+<td>Different paths before and after install</td>
+</tr>
+<tr>
+<td><code>FetchContent_Declare/MakeAvailable</code></td>
+<td>Build a pinned dependency from source</td>
+</tr>
+<tr>
+<td><code>install(TARGETS … EXPORT …)</code> + <code>install(EXPORT …)</code></td>
+<td>Make <code>find_package</code> work downstream</td>
+</tr>
+<tr>
+<td><code>enable_testing()</code> + <code>gtest_discover_tests</code></td>
+<td>Register each test case with CTest</td>
+</tr>
+<tr>
+<td><code>ctest -j8 --output-on-failure</code></td>
+<td>Run the suite in parallel, show failures</td>
+</tr>
+<tr>
+<td><code>cmake --preset dev</code></td>
+<td>Reproducible, named configurations</td>
+</tr>
+<tr>
+<td><code>CMAKE_EXPORT_COMPILE_COMMANDS</code></td>
+<td><code>compile_commands.json</code> for clangd / clang-tidy</td>
+</tr>
+<tr>
+<td><code>cmake --build build --target help</code></td>
+<td>List available targets</td>
+</tr>
+</tbody>
+</table>
+<h2 id="traps">Traps<a class="headerlink" href="#traps" title="Permanent link">&para;</a></h2>
+<p><strong><code>include_directories()</code> / <code>link_libraries()</code> without a target.</strong> These are
+directory-scoped globals that leak into every target defined afterwards,
+including ones added later by a subdirectory. Always use the <code>target_</code> form.</p>
+<p><strong>No <code>CMAKE_BUILD_TYPE</code> with a single-config generator means no optimization
+flags at all</strong> — not <code>-O0</code>, not <code>-O2</code>, just nothing. Benchmarks from such a
+build are meaningless. Set it explicitly or via a preset.</p>
+<p><strong><code>file(GLOB …)</code> for source lists.</strong> CMake globs at <em>configure</em> time, so a
+newly added file is silently not built until someone reconfigures — and the
+error appears as a link failure on someone else's machine. List sources
+explicitly. <code>CONFIGURE_DEPENDS</code> mitigates it and still isn't reliable across
+generators.</p>
+<p><strong>Pinning a dependency to a branch.</strong> <code>GIT_TAG main</code> makes your build
+non-reproducible and your CI failures arrive from someone else's commit. Pin a
+tag or a commit hash.</p>
+<p><strong>Everything <code>PUBLIC</code>.</strong> Every consumer then depends on every private header,
+your rebuild fan-out becomes the whole repo, and an internal dependency becomes
+part of your ABI. Default to <code>PRIVATE</code> and promote deliberately.</p>
+<p><strong>Precompiled headers hiding missing includes.</strong> A <code>.cpp</code> that compiles only
+because the PCH happened to include <code>&lt;string&gt;</code> breaks the moment the PCH changes
+or another build system compiles it. Run <code>include-what-you-use</code> or a
+no-PCH configuration in CI.</p>
+<p><strong>Unity builds and ODR.</strong> Concatenating translation units merges their anonymous
+namespaces and <code>static</code> symbols; two files with a <code>static int counter;</code> now
+share one. Unity builds must be validated by a non-unity CI job.</p>
+<h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
+<p>Convert the <a href="../../level-3/10-project-task-processor/">Level 3 task processor</a>
+into a properly packaged CMake project.</p>
+<ol>
+<li>Split it into a <code>taskpool</code> library target (the queue and pool) plus a
+   <code>taskdemo</code> executable, with the headers under <code>include/taskpool/</code>. Make the
+   include directory <code>PUBLIC</code> and <code>Threads::Threads</code> a <code>PUBLIC</code> link dependency
+   (it must propagate — consumers need <code>-pthread</code> too).</li>
+<li>Add a <code>tests/</code> target using GoogleTest via <code>FetchContent</code> pinned to
+   <code>v1.17.0</code>, register it with <code>gtest_discover_tests</code>, and confirm
+   <code>ctest --output-on-failure</code> shows each <code>TEST</code> separately.</li>
+<li>Add <code>install()</code> rules with an export set, install to a local prefix
+   (<code>cmake --install build --prefix /tmp/stage</code>), then write a <em>separate</em>
+   throwaway project that does <code>find_package(taskpool REQUIRED)</code> and links it.
+   It must build with no manual include paths — that is the actual test of
+   whether your <code>BUILD_INTERFACE</code>/<code>INSTALL_INTERFACE</code> split is right.</li>
+<li>Add a <code>CMakePresets.json</code> with <code>dev</code>, <code>asan</code> (<code>-fsanitize=address,undefined</code>)
+   and <code>tsan</code> (<code>-fsanitize=thread</code>) presets. Run the test suite under all three.
+   TSan on a thread pool is not a formality — expect it to find something if
+   your queue is not exactly right.</li>
+<li>Time a full build with Make and with Ninja, then time an incremental build
+   after touching one <code>.cpp</code> and after touching one <code>.h</code>. Report the four
+   numbers and explain the difference between the last two.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "content.code.copy", "content.code.annotate", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
