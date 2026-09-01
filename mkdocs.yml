@@ -1,8 +1,8 @@
 site_name: C++ Mastery Path
 site_description: A structured, module-wise C++ training program from entry level to master level.
-site_url: https://sigilipelli.github.io/cpp-skillmastery/
-repo_url: https://github.com/SIGILIPELLI/cpp-skillmastery
-repo_name: cpp-skillmastery
+site_url: https://sigilipelli.github.io/cpp-mastery-path/
+repo_url: https://github.com/SIGILIPELLI/cpp-mastery-path
+repo_name: cpp-mastery-path
 
 theme:
   name: material
