@@ -218,6 +218,38 @@ type instead of finalizing by hand at every exit point.
 `sqlite3_step` or `sqlite3_finalize` call on that statement.** Copy it into a
 `std::string` immediately if it needs to outlive the current row.
 
+## How It Actually Works
+
+Linking against SQLite pulls in a **C API** — `sqlite3_open`,
+`sqlite3_prepare_v2`, `sqlite3_step`, etc. — with no exceptions, no RAII, and
+manual handle management (`sqlite3*`, `sqlite3_stmt*` are opaque pointers to
+structs SQLite's C code owns internally). Wrapping these handles in a small
+RAII class whose destructor calls `sqlite3_close`/`sqlite3_finalize` is the
+same pattern as a `unique_ptr` with a custom deleter (Level 2 Module 6): it's
+what makes a thrown C++ exception midway through a database operation still
+release the underlying SQLite resources correctly, something the raw C API
+gives you no help with on its own.
+
+A **prepared statement** (`sqlite3_prepare_v2`) matters at the mechanism
+level, not just for convenience: SQLite parses the SQL text and compiles it
+into its own internal bytecode *once*, producing a `sqlite3_stmt` you can
+then execute repeatedly (via `sqlite3_step`) with different bound parameter
+values — reusing this compiled form avoids re-parsing and re-planning the
+query on every call, and binding parameters (`sqlite3_bind_text`, etc.)
+instead of string-concatenating values into the SQL text is what actually
+prevents SQL injection: bound parameters are passed as raw values into
+SQLite's bytecode virtual machine, never re-interpreted as SQL syntax, so
+there is no text for an attacker's quote-and-semicolon payload to "escape
+into."
+
+SQLite's single-file design means the entire database — schema, indexes,
+data — lives in one file whose internal layout is a B-tree per table/index;
+a `SELECT` with a `WHERE` clause on an indexed column walks that B-tree
+(O(log n) page reads) instead of scanning every row, and each "page read" is
+a read of a fixed-size block (commonly 4096 bytes) directly from that file,
+which SQLite also caches in memory to avoid repeated disk I/O for
+frequently-accessed pages.
+
 ## Exercise
 
 Wrap a prepared statement in an RAII class `Statement` (constructor calls

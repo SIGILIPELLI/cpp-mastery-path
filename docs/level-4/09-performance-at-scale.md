@@ -260,6 +260,41 @@ Ask the compiler with `-fopt-info-vec-missed` rather than assuming.
 **Padding everything to a cache line.** False-sharing padding costs memory and
 cache capacity. Apply it to per-thread mutable state only, not to every struct.
 
+## How It Actually Works
+
+At this level, "which algorithm" gives way to **memory-access patterns**
+because modern CPUs are far more starved for data than for arithmetic
+throughput — a core can execute several arithmetic instructions in the time
+a single main-memory access takes if it misses every cache level (Level 3
+Module 9's 100-300 cycle figure), so an algorithm with a *worse* Big-O
+complexity but a cache-friendly, sequential access pattern routinely
+outperforms a theoretically superior one that chases pointers around the
+heap. This is the concrete justification behind "data-oriented design":
+laying out data as **structure-of-arrays** (separate contiguous arrays per
+field) instead of **array-of-structures** (one array of composite objects)
+means a pass that only touches one field streams through memory
+sequentially, using every byte of every fetched cache line, instead of
+loading whole objects into cache and discarding most of each line's bytes
+as unused padding for fields you didn't need this pass.
+
+**False sharing** is a multi-threading-specific cache effect: the CPU cache
+coherence protocol tracks ownership at the granularity of a whole cache line
+(commonly 64 bytes), so if two threads on different cores write to two
+*different* variables that happen to land in the same cache line, the cores
+constantly invalidate and refetch that line from each other even though
+there's no actual data race on either variable — padding hot per-thread
+counters out to separate cache lines (`alignas(64)`) eliminates this by
+construction, converting a slow ping-ponging cache line into two genuinely
+independent ones.
+
+SIMD (`std::execution::par_unseq`, or hand-written vector intrinsics)
+exploits registers that can hold and operate on multiple values (4, 8, or
+16 `float`s, depending on the instruction set) in a *single* instruction —
+which is why the same arithmetic loop can run several times faster purely
+from being restructured (or auto-vectorized by the compiler) to expose
+independent, contiguous operations the compiler can pack into one SIMD
+instruction instead of one scalar instruction per element.
+
 ## Exercise
 
 Build a parallel word-frequency counter and drive it from 1x to as close to

@@ -373,6 +373,36 @@ TEST(ThreadPoolTest, RunsEveryTaskExactlyOnce) {
 Run these under `--gtest_repeat=100`. Concurrency bugs pass once and fail on the
 fortieth run; a single green test proves very little.
 
+## How It Actually Works
+
+The thread pool's shared queue is where every concurrency mechanism from
+Module 3 comes together in one real data structure. Worker threads block on
+a `std::condition_variable` when the queue is empty rather than
+busy-spinning in a loop checking `empty()` repeatedly — `wait()` atomically
+releases the associated mutex and puts the thread to sleep at the kernel
+level (identical mechanism to a blocked `mutex::lock()`), so idle workers
+consume no CPU at all until `notify_one()`/`notify_all()` wakes them, which
+happens exactly when the producer pushes a new task while holding the same
+mutex. The mutex around the queue is what prevents two workers from both
+popping the same task (a race that would otherwise let two threads execute
+the identical job, or corrupt the underlying `std::queue`'s internal state
+mid-pop) — every push/pop is a critical section exactly one thread executes
+at a time.
+
+Each task submitted as a `std::function<void()>` is a type-erased callable
+(Module 5's Observer discussion applies identically here): the pool doesn't
+need to know the concrete lambda type each caller submits, only that it can
+be invoked with no arguments, which is what lets `submit()` accept
+arbitrary lambdas capturing arbitrary data.
+
+Shutting the pool down cleanly relies on RAII again: the pool's destructor
+sets a stop flag (checked under the same mutex) and calls
+`notify_all()` so every sleeping worker wakes up, sees the flag, and returns
+from its loop instead of blocking forever — then joins each `std::thread`,
+which blocks the calling thread until each worker's OS thread has actually
+exited, guaranteeing no worker is left mid-task (or dangling with a
+reference to a destroyed queue) once the pool object itself is gone.
+
 ## Stretch goals
 
 - Make `submit()` return a `std::future<T>` so a caller can retrieve a task's

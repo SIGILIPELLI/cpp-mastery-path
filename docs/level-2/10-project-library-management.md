@@ -346,6 +346,34 @@ a pointer to whatever was actually constructed, `describe()` still dispatches
 virtually, and the destructor still runs the derived class's cleanup. This is
 the standard way to put polymorphic objects in an STL container.
 
+## How It Actually Works
+
+Storing `std::vector<std::unique_ptr<Book>>` rather than
+`std::vector<Book>` avoids **object slicing**: if `EBook` derives from
+`Book` and you stored `Book` by value, assigning an `EBook` into a
+`Book`-typed vector slot would copy only the `Book` base subobject — the
+`EBook`-specific members and its vtable-based identity as an `EBook` would
+be lost, because a `std::vector<Book>` allocates exactly `sizeof(Book)`
+bytes per element regardless of what derived type constructed it. Wrapping
+each book in `unique_ptr<Book>` instead stores a fixed-size pointer per
+slot, so the vector itself never needs to know how large any individual
+`Book`-derived object actually is — polymorphism only works reliably through
+a pointer or reference specifically because dispatch depends on a vptr
+installed in the *original*, unsliced, heap-allocated object.
+
+When the vector reallocates during growth (as covered in Module 3), it
+moves each `unique_ptr` rather than the underlying `Book`/`EBook` object —
+moving a `unique_ptr` is just copying an 8-byte pointer and nulling the
+source, so growing the collection never touches, copies, or re-dispatches
+through the actual book objects at all, no matter how large or how deep
+their inheritance hierarchy.
+
+Calling a virtual method like `book->describe()` through the stored
+`unique_ptr<Book>` goes through the same vtable indirection as Module 1: the
+pointer's static type is `Book*`, but the vptr embedded in whatever concrete
+object (`Book` or `EBook`) was actually constructed on the heap decides which
+`describe()` body actually executes.
+
 ## Stretch goals
 
 - Add a `removeBook(isbn)` that erases the entry from the `unordered_map` —

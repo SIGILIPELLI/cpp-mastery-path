@@ -293,6 +293,40 @@ hand-written loop.
 | Reverse / rotate / shuffle | `reverse`, `rotate`, `shuffle` | `<algorithm>` |
 | Drop adjacent duplicates | `unique` + `erase` (sort first) | `<algorithm>` |
 
+## How It Actually Works
+
+An iterator is not one concrete type — it's a compile-time contract, and
+`std::sort`, `std::find`, etc. are *templates* that get instantiated
+separately for each container's actual iterator type, exactly like any other
+template (see Module 2). For `std::vector`, whose iterator is really just a
+raw pointer wrapper, `++it` compiles down to plain pointer increment and
+`*it` to a plain dereference — there is no virtual call, no indirection
+beyond what a raw loop would already do. This is why algorithms written
+against iterators have effectively **zero overhead** compared to hand-rolled
+loops once optimizations are on: the compiler inlines the whole algorithm
+body specialized for that exact iterator type and can reason about it the
+same way it would a raw pointer loop.
+
+Iterator *categories* reflect what operations the underlying memory layout
+actually supports: `std::vector`'s random-access iterators support `it + 5`
+directly (pointer arithmetic), while `std::list`'s bidirectional iterators
+only support one step at a time (`++`/`--`), because a linked list has no
+way to "jump ahead 5" without walking each node's `next` pointer in turn.
+`std::sort` requires random access specifically because efficient sorting
+algorithms (introsort, the typical STL implementation — quicksort with a
+heapsort fallback) need to jump to arbitrary positions like the middle
+element for pivot selection; that's why `std::sort` doesn't compile against
+`std::list` at all, and `std::list::sort` exists as a separate member
+function implementing a linked-list-appropriate algorithm (merge sort)
+instead.
+
+Iterator invalidation is a direct consequence of container internals:
+erasing from a `std::vector` shifts and potentially reallocates the backing
+array, invalidating every iterator from the erase point onward, while
+erasing from a `std::list` only frees that one node, leaving every other
+iterator (which points at a separate, untouched heap allocation) still
+valid.
+
 ## Exercise
 
 Start with `std::vector<std::string> words` holding a couple of dozen words,

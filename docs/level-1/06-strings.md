@@ -141,6 +141,35 @@ std::cout << result << std::endl;   // Total: 42 items, $19.99
 from mixed types (numbers, strings) without a lot of manual `std::to_string`
 and `+` calls.
 
+## How It Actually Works
+
+`std::string` is not a primitive — it's a class that manages a heap-allocated
+buffer of characters, much like `std::vector<char>` internally, plus a
+null terminator it maintains automatically so `.c_str()` can hand raw C APIs
+a valid C-string. Most implementations also apply **Small String
+Optimization (SSO)**: strings shorter than roughly 15-22 characters
+(implementation-dependent) are stored directly inside the `std::string`
+object's own stack/member memory, with no heap allocation at all. Only once
+a string grows past that threshold does it allocate on the heap — which is
+why short strings are essentially free to copy and construct, while long
+ones incur a real `new[]` call.
+
+Concatenating with `+` on `std::string` allocates a brand-new buffer sized
+to hold both operands and copies both into it — repeated concatenation in a
+loop (`result += s;` many times) can trigger the same reallocate-and-copy
+growth pattern as `std::vector`, which is why `+=`/`append` on the same
+string object is cheaper than chaining `+` to build new temporaries
+repeatedly.
+
+Raw C-style `char*` strings, by contrast, are just a pointer to the first
+byte of a sequence that keeps going until a `'\0'` byte is found — there's no
+length stored anywhere, so `strlen` has to scan byte-by-byte until it hits
+that terminator. This is the root cause of classic C string bugs: read or
+write past the terminator (or forget it entirely) and every string function
+either walks off into unrelated memory or corrupts it. `std::string` sidesteps
+this by tracking its length explicitly as a member field, so `.size()` is an
+O(1) lookup, not a scan.
+
 ## Exercise
 
 Write a function `std::string reverseWords(const std::string& sentence)` that

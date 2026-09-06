@@ -353,6 +353,39 @@ with `RESOURCE_LOCK`.
 `-fsanitize=address` finds nothing on its own — ASan is a *runtime* tool. The
 CI step that matters is `ctest`, not `cmake --build`.
 
+## How It Actually Works
+
+Running "thousands of tests fast" is really a scheduling problem over the
+same build DAG concepts from Module 6: **test sharding** splits the full
+GoogleTest binary's registered tests (recall Level 3 Module 8's static-
+registration mechanism — every `TEST()` adds itself to a global list at
+program startup) across multiple parallel worker processes using
+GoogleTest's own `--gtest_filter`/sharding environment variables, so a CI
+matrix runs N independent processes each executing a disjoint subset of the
+same static registry, bounded by wall-clock time rather than test count.
+
+**Flaky test detection** usually works by literally re-running a failing
+test in isolation several times and checking whether the failure reproduces
+consistently — a test that fails once but passes on rerun typically has a
+genuine mechanism behind it even though the *symptom* looks random: an
+uninitialized variable (Level 1 Module 2, undefined behavior means the read
+value can differ run to run depending on whatever garbage bits happen to be
+in that stack slot), a data race (Level 3 Module 3, whose outcome depends on
+precise thread scheduling that varies between runs), or a static object
+initialization-order dependency across translation units (the standard only
+guarantees order *within* one file, not across files, so which global
+gets constructed first is link-order-dependent and can silently change).
+
+Fuzzing (libFuzzer, AFL) works by instrumenting the binary at compile time
+to track which code paths ("edges" in the control-flow graph — the jumps
+from Level 1 Module 3) each input exercises, then using that coverage
+feedback to mutate inputs toward ones that reach *new* code paths, rather
+than generating random inputs blindly — this is why fuzzing reliably finds
+buffer overflows and integer-overflow crashes (Module 5's territory) that
+example-based unit tests miss: it's systematically searching the space of
+inputs for ones that hit a code path nobody wrote a test for, guided by
+actual coverage data rather than developer intuition about what to test.
+
 ## Exercise
 
 Build a fully instrumented test pipeline for a small `RateLimiter` class —

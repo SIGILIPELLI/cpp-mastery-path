@@ -318,6 +318,37 @@ And you simply cannot overload `.`, `.*`, `::`, `?:`, or `sizeof`.
 | `++a` | `T& operator++()` (member) | `*this` |
 | `a++` | `T operator++(int)` (member, dummy `int` param) | copy of the old value |
 
+## How It Actually Works
+
+`operator+` is syntactic sugar the compiler applies *before* overload
+resolution even begins: seeing `a + b`, it rewrites the expression as
+`operator+(a, b)` (free function form) or `a.operator+(b)` (member form) and
+then runs ordinary overload resolution exactly as it would for any other
+function call — there is no separate "operator dispatch" mechanism at
+runtime. This is why operator overloads compile to plain function calls
+(inlined away entirely at higher optimization levels for something like
+`Vec2::operator+`), and why you can define `operator+` to do anything at
+all — the compiler enforces the syntax, not the semantics.
+
+For `operator<<` with `std::cout`, the reason it must be a **free function**
+(not a member of your class) is argument order: `std::cout << obj` needs the
+left operand to be `std::ostream&`, but you can't add a member function to
+`std::ostream` itself, so the overload has to be a free function taking both
+operands, one of which the compiler finds via **argument-dependent lookup**
+(ADL) — it searches the namespace your class lives in for a matching
+`operator<<`, which is how `std::cout << myVec2` finds your overload without
+an explicit `using` or qualification.
+
+`operator=` (copy/move assignment) has a subtlety the others don't: it must
+correctly handle **self-assignment** (`a = a;`) and must release the
+target's *existing* resources before acquiring the source's — get this wrong
+(e.g. `delete` the target's heap buffer before checking whether source and
+target are the same object) and self-assignment frees memory the right-hand
+side still needs, then reads it anyway, corrupting the object. This is why
+correctly-written assignment operators either check `this != &other`
+explicitly or use the copy-and-swap idiom, which sidesteps the issue by
+building the new state in a temporary before touching `this` at all.
+
 ## Exercise
 
 Write a `Money` class storing an amount in integer cents (never use `double`

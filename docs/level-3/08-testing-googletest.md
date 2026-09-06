@@ -261,6 +261,38 @@ bite.** The per-test fixture reconstruction protects fixture members, not
 globals or `static` locals. Run with `--gtest_shuffle` occasionally to find
 tests that only pass in one particular order.
 
+## How It Actually Works
+
+`TEST(Suite, Name) { ... }` is a macro, and understanding what it expands
+into demystifies a lot of GoogleTest's behavior: it actually declares a new
+class derived from `::testing::Test` whose body becomes an overridden
+`TestBody()` method, and — critically — it also emits a **static object**
+of a registrar type whose constructor runs before `main()` even starts
+(static objects at namespace/global scope are constructed during program
+startup, before user code runs) and registers that test class with a global
+test registry. This is the entire mechanism behind "just write `TEST(...)`
+and it runs" — there's no reflection or scanning of your source; every test
+silently adds itself to a runtime list purely as a side effect of static
+initialization, and `RUN_ALL_TESTS()` just iterates that list, constructing
+a fresh instance of each test's class and calling its `TestBody()`.
+
+`EXPECT_EQ` and `ASSERT_EQ` differ in exactly one mechanism: `ASSERT_*`
+macros expand to code that does an early `return` out of the current test
+function on failure, while `EXPECT_*` records the failure but lets
+execution continue — which is why `ASSERT_*` can't be used inside a
+non-`void`-returning helper function or on a background thread (a bare
+`return` from a `TestBody()`-called helper doesn't propagate the same way)
+and why a single test can report multiple `EXPECT_*` failures from one run
+but only ever stops at the first `ASSERT_*` failure.
+
+Fixtures (a class deriving from `::testing::Test` with `SetUp()`/`TearDown()`)
+exploit ordinary constructor/destructor semantics: GoogleTest constructs a
+*fresh* instance of the fixture class for every single `TEST_F`, so member
+variables initialized in `SetUp()` never leak state between tests — each
+test gets its own object with its own memory, torn down via the normal
+destructor mechanism (Module 4's RAII guarantees) before the next test's
+fixture is constructed.
+
 ## Exercise
 
 Write a `Stack` class (fixed capacity, `push`, `pop`, `top`, `empty`,

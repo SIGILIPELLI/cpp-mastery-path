@@ -310,6 +310,38 @@ std::vector<int> better(100);                                 // prefer this
 | Replace contents | `.reset(newPtr)` | `.reset(newPtr)` |
 | Check emptiness | `if (p)` | `if (p)` |
 
+## How It Actually Works
+
+`std::unique_ptr<T>` is, at runtime, nothing more than a raw `T*` wrapped in
+a class — it adds **zero memory overhead** in the common case (no custom
+deleter) and its destructor is simply `if (ptr) delete ptr;`. The entire
+safety guarantee comes from the *type system*, not from any runtime
+bookkeeping: the compiler deletes `unique_ptr`'s copy constructor and copy
+assignment operator, so `unique_ptr<T> b = a;` is a compile error, not a
+runtime check — there is no way to accidentally create two owners. Moving a
+`unique_ptr` (`std::move(a)`) copies the raw pointer into the destination
+and sets the source's internal pointer to `nullptr`, so exactly one
+`unique_ptr` ever holds the live address at a time, and destroying a
+moved-from `unique_ptr` is a no-op because its pointer is null.
+
+`std::shared_ptr<T>` is heavier: alongside the raw pointer, it holds a
+pointer to a separately heap-allocated **control block** containing a
+strong-reference count and a weak-reference count. Copying a `shared_ptr`
+atomically increments the strong count (atomic because multiple threads may
+hold copies); destroying one atomically decrements it, and only when the
+count hits zero does the destructor actually call `delete` on the managed
+object. `make_shared<T>(...)` allocates the object and its control block in
+a *single* heap allocation (`new T(...)` plus a separate control block
+allocation would be two), which is both faster and more exception-safe.
+
+`std::weak_ptr` holds a pointer to that same control block but doesn't
+increment the strong count — `lock()` checks the strong count before
+producing a `shared_ptr`, which is the mechanism that breaks **reference
+cycles**: two objects holding `shared_ptr`s to each other would keep each
+other's count above zero forever (a real memory leak, since neither count
+ever reaches 0), so one side holds a `weak_ptr` instead, which doesn't
+contribute to the count and lets the cycle actually be collected.
+
 ## Exercise
 
 Model a small file system tree. A `Directory` owns a

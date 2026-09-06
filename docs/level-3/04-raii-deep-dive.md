@@ -211,6 +211,36 @@ validating results.** A destructor still shouldn't ignore an error signal
 silently; log it, or provide an explicit `close()`/`commit()` method that can
 report failure, with the destructor as the guaranteed fallback.
 
+## How It Actually Works
+
+RAII isn't a library feature — it's a direct consequence of one guarantee
+the C++ standard makes about object lifetime: a local (automatic-storage)
+object's destructor is called **deterministically**, at the exact point
+execution leaves its scope, whether by falling off the end of a block, an
+early `return`, a `break`/`continue`, or — critically — an exception
+unwinding past it (see Level 1's exception module). No garbage collector,
+no "eventually" — the compiler knows the object's scope at compile time and
+emits a direct destructor call at every point control can leave that scope,
+including duplicating that call across every early-exit path.
+
+For an object with multiple members, **destruction order is the exact
+reverse of construction order** — this is a hard guarantee, not an
+implementation detail, and it's what makes RAII compose safely: if a class
+holds a `std::lock_guard` constructed after a `std::ofstream`, the lock is
+released *before* the file stream's destructor runs and closes the file,
+matching the dependency direction you'd expect. The same reverse-order rule
+applies to a chain of nested scopes and to base/member subobjects within one
+object (members destroyed in reverse declaration order, then base classes
+destroyed after all members, mirroring construction which does bases first).
+
+This determinism is also *why* C++ doesn't need a `finally` block the way
+Java does: wrapping a resource in a small RAII type and simply letting it go
+out of scope achieves the same guaranteed cleanup, but works uniformly
+whether the scope ends normally or via an exception three functions up the
+call stack — the unwinding mechanism runs every intervening destructor
+regardless of how far it has to unwind, without any explicit cleanup code at
+each call site.
+
 ## Exercise
 
 Write a `MutexUnlocker` RAII class that's the mirror image of `lock_guard`:

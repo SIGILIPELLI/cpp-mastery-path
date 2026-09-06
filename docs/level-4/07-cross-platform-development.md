@@ -294,6 +294,39 @@ fail at link.
 **Assuming `hardware_concurrency()` is nonzero.** It is permitted to return `0`
 when the count is unknown. Clamp it: `std::max(1u, std::thread::hardware_concurrency())`.
 
+## How It Actually Works
+
+**Implementation-defined behavior** exists because the standard specifies
+C++'s *semantics*, not a specific hardware encoding — `int` is only
+guaranteed to be at least 16 bits, `long` at least 32, precisely so the
+language maps efficiently onto CPUs with genuinely different native word
+sizes; the compiler picks the actual bit width based on what's efficient
+for the target ABI (Level 1 Module 4's calling-convention concept extends to
+type sizes too), which is why `sizeof(long)` differs between 64-bit Linux
+(8 bytes) and 64-bit Windows (4 bytes) for the exact same source code — a
+real, silent source of bugs when serializing raw structs across platforms
+or over a network without an explicit, fixed-width format.
+
+**Endianness** is a hardware fact about how a multi-byte value's bytes are
+ordered in memory: little-endian CPUs (x86, most ARM configurations) store
+the least-significant byte at the lowest address, so reading the 4 raw bytes
+of an `int` and reinterpreting them on a big-endian machine produces a
+completely different number — this is exactly why network protocols
+mandate a specific byte order ("network byte order," big-endian) and why
+`htons`/`ntohs`-style conversion functions exist: they perform an explicit
+byte-swap so serialized data round-trips correctly regardless of which
+architecture wrote or reads it.
+
+`#ifdef _WIN32` / `#ifdef __APPLE__` platform guards work through the same
+preprocessor mechanism from Level 1 Module 1 — each compiler predefines a
+set of macros identifying its target platform, and the preprocessor
+literally deletes the code inside a non-matching `#ifdef` branch before the
+compiler proper ever sees it, so platform-specific code (a POSIX `read()`
+call versus a Windows `ReadFile()` call) never even needs to type-check on
+platforms where it wouldn't compile — a CI matrix running one build per
+platform is what actually verifies each of those deleted-elsewhere branches
+compiles correctly somewhere.
+
 ## Exercise
 
 Make the [task processor](../level-3/10-project-task-processor.md) genuinely

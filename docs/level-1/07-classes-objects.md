@@ -198,6 +198,36 @@ int main() {
 | `this` | Pointer to the current instance |
 | `private` / `public` | Access specifiers controlling encapsulation |
 
+## How It Actually Works
+
+An object's memory layout is decided entirely at compile time: a class with
+members `int a; double b; std::string c;` becomes, in memory, those three
+members laid out back-to-back (with compiler-inserted **padding** so each
+member starts at an address matching its alignment requirement — a `double`
+typically needs to start at an 8-byte-aligned address, so the compiler may
+insert unused padding bytes after a smaller member to satisfy that). There
+is no per-object overhead beyond this — no hidden "class name" field, no
+reference count — unless the class has virtual functions, in which case a
+hidden **vptr** (pointer to a virtual function table) is added, usually as
+the first 8 bytes.
+
+A constructor is really just a function the compiler guarantees gets called
+automatically at the point of object creation, that initializes each member
+in the order the members are *declared* (not the order listed in the
+initializer list — a common source of subtle bugs when one member's
+initializer depends on another declared later). "Calling" a member function
+like `obj.method()` compiles down to an ordinary function call with one
+extra hidden argument: a pointer to `obj` itself, passed as `this`. There's
+no dispatch table lookup for a non-virtual method — the compiler resolves
+which function address to call at compile time, exactly like overload
+resolution, so calling a member function costs the same as calling a free
+function.
+
+`struct` and `class` produce identical machine code — the *only* difference
+the compiler treats differently is the default access level (`public` for
+`struct`, `private` for `class`); everything about layout, constructors, and
+dispatch is otherwise the same keyword-for-keyword.
+
 ## Exercise
 
 Write a `Book` class with private members `title`, `author`, and `pagesRead`

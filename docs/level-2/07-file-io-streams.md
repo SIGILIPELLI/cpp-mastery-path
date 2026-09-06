@@ -317,6 +317,36 @@ This is the practical reason to type parameters as `std::ostream&` rather than
 hardcoding `std::cout`: the same function becomes verifiable without touching
 the file system.
 
+## How It Actually Works
+
+Every stream (`cin`, `cout`, `ifstream`, `ofstream`, `stringstream`) inherits
+from the same base classes (`istream`/`ostream`) and, crucially, each
+concrete stream plugs in a different **stream buffer** (`streambuf`) that
+does the actual byte movement — `<<` and `>>` themselves are entirely
+buffer-agnostic; they just format data and hand bytes to whatever buffer is
+installed. That's the actual mechanism behind "the same operators work
+identically everywhere": `std::cout` connects its streambuf to the OS's
+standard-output file descriptor, `std::ifstream` connects its streambuf to
+an OS file handle, and `std::stringstream` connects its streambuf to an
+in-memory `std::string` — swap the buffer, and every formatting call above
+it behaves the same but writes somewhere else.
+
+File streams don't write to disk on every `<<` call — the streambuf
+maintains an internal memory buffer and only issues an actual OS-level
+`write()` syscall when that buffer fills, when you explicitly call
+`flush()`, or when the stream is destroyed/closed. This buffering is why a
+program that crashes (not via a normal `return`/exception unwind, but e.g.
+a hard `abort()` or power loss) can lose the last chunk of "written" output
+that never made it past the in-memory buffer to disk — the destructor that
+would flush it never got to run.
+
+Opening a file also allocates real OS resources — a file descriptor, an
+entry in the process's open-file table — which is exactly the resource RAII
+wraps: `ifstream`'s destructor closes the file handle automatically, so an
+exception thrown between opening a file and finishing with it still results
+in the OS-level handle being released during stack unwinding, the same
+mechanism covered under exception handling.
+
 ## Exercise
 
 Write a small contact-book program.

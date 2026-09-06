@@ -271,6 +271,36 @@ single most common beginner template error.
 | Full specialisation | `template <> T f<int>(int a) { ... }` |
 | Where definitions go | **Header file**, always |
 
+## How It Actually Works
+
+A template is not a function — it's a **blueprint the compiler uses to
+generate real functions**, and no code exists for it until you actually use
+it with a concrete type. This process is called **template instantiation**:
+when the compiler sees `max(3, 5)` and `max(3.5, 2.1)` calling a template
+`max`, it silently generates two completely separate, fully-typed functions
+— `max<int>` and `max<double>` — each compiled as if you'd hand-written an
+overload for that exact type, with no runtime type parameter, no generics
+metadata, and no dispatch cost. This is why templates must live in headers
+in the common case: the compiler needs the full template definition visible
+at every call site to perform instantiation there, not just a declaration.
+
+Instantiating the same template with the same type twice across different
+translation units produces duplicate identical function bodies in each
+object file; the linker later recognizes them as identical (via a mechanism
+usually called COMDAT folding or "linkonce" sections) and discards all but
+one copy, so you don't end up with duplicate-symbol errors or bloated
+binaries in the normal case — but instantiating with *many* different types
+does genuinely generate that many separate function bodies, which is the
+real mechanism behind **template bloat**: a heavily templated codebase can
+produce noticeably larger binaries and longer compile times purely because
+each instantiation is compiled independently, in full.
+
+Type errors inside a template body are only checked *once you instantiate
+it* with a specific type — this is why template error messages can be long
+and confusing: the compiler is reporting a failure deep inside a
+function that only exists because you asked for `max<MyWeirdType>`, and it
+shows you the whole instantiation chain that got it there.
+
 ## Exercise
 
 Write a class template `Pair<A, B>` that stores two values of possibly

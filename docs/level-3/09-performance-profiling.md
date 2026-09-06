@@ -256,6 +256,41 @@ elements, a linear scan over a contiguous `std::vector` usually beats a
 `std::unordered_map` lookup — the vector fits in cache and the hash does not.
 The crossover is real and only measurement locates it.
 
+## How It Actually Works
+
+A **sampling profiler** (like `perf` on Linux or Instruments on macOS) works
+by having the OS interrupt your running program at a fixed frequency (say,
+1000 times/second) and record the current instruction pointer and call stack
+at each interrupt — over thousands of samples, the functions where the
+program spends the most wall-clock time simply show up most often in the
+samples, with no per-instruction instrumentation overhead. This is why
+sampling profilers can profile optimized release builds with near-zero
+distortion, while instrumentation-based profiling (inserting timing code at
+every function entry/exit) can be accurate down to the call but measurably
+slows the program and can even change which branch a CPU predicts.
+
+Most real-world C++ performance problems trace back to one of two hardware
+realities the language exposes rather than hides: **cache misses** and
+**unnecessary allocation/copies**. A cache miss (needing data that isn't in
+the CPU's L1/L2/L3 cache) costs on the order of 100-300 CPU cycles to fetch
+from main RAM, versus roughly 4 cycles for an L1 hit — which is the actual
+quantitative reason `std::vector`'s contiguous layout (Level 2 Module 3)
+consistently outperforms `std::list`'s scattered nodes even when both are
+"O(1)" for a given operation on paper. A heap allocation (`new`/`malloc`)
+isn't just "slow" abstractly — it typically involves the allocator searching
+a free-list or arena for a suitably-sized block, potentially requesting more
+memory from the OS via a syscall, work that dwarfs a few arithmetic
+instructions; this is why profiling often reveals that eliminating a hidden
+copy (passing a large object by value instead of by `const&`, or triggering
+an implicit temporary) fixes more than any algorithmic tweak.
+
+Compiler optimization flags (`-O2`/`-O3`) change actual generated
+instructions — inlining small functions to remove call overhead, unrolling
+loops (Level 1 Module 3), and reordering/eliminating dead computations —
+which is why profiling debug builds (`-O0`, no optimization, extra
+bookkeeping for debugger support) gives numbers that don't reflect what
+ships to users at all.
+
 ## Exercise
 
 Take the `joinSlow`/`joinFast` pair and extend the comparison. Add a third

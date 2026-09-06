@@ -146,6 +146,36 @@ via an exception. You'll cover this pattern properly in Level 3, but it's
 worth knowing the name now: it's *the* idiomatic C++ answer to "make sure
 this cleanup always happens."
 
+## How It Actually Works
+
+Unlike a return value, an exception doesn't travel through the normal
+function-return path at all. Most modern compilers implement exceptions
+using **zero-cost (table-based) unwinding**: as long as no `throw` happens,
+a `try` block costs *nothing* extra at runtime — no per-call overhead the
+way error-code checking has. Instead, the compiler emits a separate table
+alongside the code that maps instruction addresses to "what destructors need
+running and where to jump if an exception passes through here." When
+`throw expr;` executes, the runtime allocates the exception object, then
+walks the **call stack** frame by frame using that table, looking for a
+`catch` whose type matches. For every frame it unwinds past, it calls the
+destructors of every local object that was fully constructed in that frame —
+this is the mechanism that makes RAII (Resource Acquisition Is
+Initialization) work safely with exceptions: a file handle or mutex wrapped
+in a destructor-owning object gets released automatically during unwinding,
+even though execution never reaches the code after the `throw`.
+
+If unwinding reaches the top of the stack with no matching `catch`,
+`std::terminate` is called, which by default calls `abort()` — this is why
+an uncaught exception crashes the whole program rather than just "erroring
+out" gracefully. Because unwinding must run destructors correctly, throwing
+*from inside a destructor* while another exception is already unwinding is
+explicitly dangerous — it triggers `std::terminate` immediately, since the
+runtime can't unwind two exceptions on the same stack at once.
+
+Catching `const std::exception&` rather than by value avoids **object
+slicing**: catching by value would copy only the base-class portion of a
+derived exception object, losing any derived-specific data and dispatch.
+
 ## Exercise
 
 Write a function `int safeDivide(int a, int b)` that returns `a / b`, but

@@ -149,6 +149,36 @@ int square(int n) {
 This becomes essential once code is split across multiple `.cpp` and `.h`
 files, which you'll do starting in [Module 10](10-project-bank-account-cli.md).
 
+## How It Actually Works
+
+Calling a function is a real, costed operation in C++: the CPU pushes a
+**stack frame**. Concretely, calling `f(a, b)` involves pushing the
+arguments (or loading them into designated argument registers per the ABI —
+Application Binary Interface, the agreed-upon calling convention), pushing
+the **return address** (where execution should resume after `f` finishes),
+jumping to `f`'s code, and inside `f`, reserving stack space for its local
+variables. Returning pops that frame and jumps back to the saved return
+address. Every level of function-call nesting adds another frame to the call
+stack — which is exactly why unbounded recursion eventually crashes with a
+stack overflow: each frame consumes real memory in a fixed-size region.
+
+Overloading is resolved entirely at **compile time**, not runtime — there's
+no dispatch cost. When you write `print(5)` and `print(5.0)`, the compiler
+looks at the argument types, matches them against every `print` overload's
+parameter list, and picks one using a ranked set of rules (exact match beats
+promotion, promotion beats standard conversion, and so on). By the time the
+program runs, the ambiguity is already gone — the generated machine code has
+a direct call to one specific address; there's no runtime "which overload"
+check like there is with virtual dispatch. This is also why overload
+resolution can fail to compile ("ambiguous call") — the compiler must be
+able to pick exactly one candidate using its rules, with no runtime fallback
+to break a tie.
+
+Passing arguments **by value** copies bytes onto the callee's stack frame
+(cheap for an `int`, potentially expensive for a large `struct`); passing
+**by reference** just passes the address, so the callee operates on the
+caller's original memory with no copy at all.
+
 ## Exercise
 
 Write overloaded functions named `area`: one taking a single `double` (for a

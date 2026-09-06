@@ -259,6 +259,42 @@ Buffer makeBuffer() {
 and it can still be assigned to — but calling ordinary methods on it before
 reassigning is asking for surprises, even if it technically compiles.
 
+## How It Actually Works
+
+An **rvalue reference** (`T&&`) is a distinct type the overload-resolution
+mechanism uses to detect "this argument is a temporary, safe to cannibalize"
+versus an lvalue reference (`T&`), which means "this argument is a named
+object someone else still needs." The compiler determines this purely from
+the *expression's* category at the call site — a temporary returned by
+value, or the explicit result of `std::move()`, binds to `T&&` overloads in
+preference to `T&`; a named variable binds to `T&` unless explicitly cast.
+Critically, `std::move` does not move anything by itself — it's a `static_cast`
+to an rvalue reference type, purely a compile-time signal that tells overload
+resolution "treat this named object as movable," and it's entirely up to the
+selected move constructor/assignment to actually act on that.
+
+A move constructor for something like `std::vector<int>` doesn't copy any
+elements at all: it copies the *source's* three internal pointers (begin,
+end, capacity-end — see Level 1 Module 5) into the new object and sets the
+source's pointers to `nullptr`. That's the entire operation — three pointer
+copies and three null-outs, versus a copy constructor's O(n) allocate-and-
+duplicate-every-element. This is why moving a vector of a million strings is
+essentially free while copying it is not: ownership of the *same* heap
+buffer transfers to the new object, and the old object is left in a valid
+but unspecified ("moved-from") state — specifically empty, for a
+well-behaved `vector`, precisely so its destructor (which will still run)
+safely does nothing rather than double-freeing memory the new object now
+owns.
+
+**Perfect forwarding** (`std::forward`) solves a narrower problem inside
+templates: a function parameter `T&&` in a template context is a "forwarding
+reference" that can bind to *either* an lvalue or rvalue, but once it has a
+name inside the function body, it's itself an lvalue (named things are
+always lvalues) — so passing it onward naively would always copy.
+`std::forward<T>(x)` conditionally casts it back to an rvalue only if `T` was
+deduced as a non-reference type, preserving whichever value category the
+original caller passed in, all the way through a chain of forwarding calls.
+
 ## Exercise
 
 Give the `Buffer` class above a `Buffer(const Buffer&) = delete;` (make it

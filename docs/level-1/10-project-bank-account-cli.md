@@ -182,6 +182,33 @@ Amount: 500
 Error: Insufficient funds
 ```
 
+## How It Actually Works
+
+Splitting `Account` into `account.h` and `account.cpp` reflects the
+compilation model directly: each `.cpp` file is compiled *independently* into
+its own object file, and the header is what lets `main.cpp` know `Account`'s
+shape (its members and method signatures) without seeing `account.cpp`'s
+bodies. The compiler only needs the declaration to generate correct calling
+code (it needs to know the class's size and each method's address will exist
+somewhere); the linker later stitches the call in `main.cpp`'s object file to
+the actual compiled body sitting in `account.cpp`'s object file. This is why
+changing a method's *implementation* only requires recompiling `account.cpp`
+and relinking, while changing the header (adding a member, changing a
+signature) forces every file that includes it to recompile — the compiler
+has to regenerate code with a different memory layout or call signature
+everywhere that layout is assumed.
+
+Each `Account` object created on the stack in `main` owns its `balance` and
+`name` members inline — a `std::vector<Account>` holding several accounts
+stores every account's full data contiguously in one heap block, not as
+scattered pointers to separately-allocated objects, so iterating over
+accounts to print balances is a straight linear memory scan rather than a
+chase through indirect pointers. When an `Account` throws from a withdrawal
+method (insufficient funds) and `main` catches it, the exception-unwinding
+machinery from the previous chapter is what guarantees any partially-built
+temporary objects along the way get properly destroyed before control
+reaches the `catch` block.
+
 ## Stretch goals
 
 - Add a `transfer` operation between two accounts (deposit + withdraw as one

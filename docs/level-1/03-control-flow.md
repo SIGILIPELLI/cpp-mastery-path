@@ -148,6 +148,34 @@ std::cout << std::endl;
 // 0 2 4 6 8
 ```
 
+## How It Actually Works
+
+At the machine level there's no such thing as `if`, `for`, or `while` —
+every control-flow statement the compiler sees becomes **comparison
+instructions plus conditional jumps**. `if (x > 0) { a(); } else { b(); }`
+lowers to roughly: compare `x` to `0`, jump to the `else` block's address if
+the comparison is false, otherwise fall through to `a()`'s code, then an
+unconditional jump past the `else` block. The CPU has no concept of nested
+braces — it only has a linear instruction stream and jumps that hop around
+in it.
+
+A `for (int i = 0; i < n; i++)` loop desugars into the same
+initialize-check-jump-increment pattern as a `while` loop with a jump back to
+the top; the compiler treats them as the same construct. Modern compilers
+also try **loop unrolling** — duplicating the loop body several times to cut
+down on the number of conditional jumps executed, since a mispredicted
+branch (the CPU guessed wrong about whether a jump would be taken) stalls
+the pipeline for several cycles. This is why tight, predictable loops (like
+counting up to a fixed bound) are cheap, while loops with unpredictable
+branching inside them run measurably slower than the instruction count alone
+would suggest — the CPU's branch predictor cache learns patterns, and code
+that behaves consistently gets consistently correct guesses.
+
+`switch` on an integral type compiles differently again: with enough
+contiguous cases, the compiler can emit a **jump table** — an array of
+addresses indexed directly by the switch value, letting it jump straight to
+the matching case in one lookup instead of a chain of comparisons.
+
 ## Exercise
 
 Write a program that loops from 1 to 50 and, for each number: prints

@@ -584,6 +584,38 @@ claim in the class's name. If you change `get()` to take a `shared_lock` —
 which looks correct and passes every functional test — this is the job that
 turns red.
 
+## How It Actually Works
+
+`kvcache`'s LRU eviction is a textbook case of choosing a data structure
+for its *mechanism*, not just its Big-O: an LRU cache needs O(1) lookup by
+key and O(1) "move this entry to most-recently-used" on every access, which
+a single container can't give you alone. Pairing a `std::list` (Level 2
+Module 3's doubly-linked list — O(1) insert/erase/splice at any position
+given an iterator, with no shifting) with a `std::unordered_map<Key,
+list::iterator>` gets both: the hash map gives O(1) lookup straight to the
+node's position in the list, and `list::splice`/`erase`+`push_front` moves
+that node to the front in O(1) *without invalidating any other node's
+iterator* — a guarantee `std::vector` couldn't offer, since reallocation
+or shifting there would invalidate exactly the iterators stored in the map.
+Eviction is then just popping the list's tail node and erasing its key from
+the map — both O(1).
+
+The server's socket loop is where Level 3's networking and concurrency
+modules combine directly: each accepted client connection is handed to a
+worker (thread-per-connection or dispatched into the thread pool from
+Level 3's capstone), and every access to the shared LRU cache from multiple
+client-handling threads must go through the same mutex-guarded critical
+section discussed in Module 2 — the cache's internal `list`/`unordered_map`
+have no thread-safety of their own, so a lock around every public cache
+operation is what prevents two clients' concurrent `SET` calls from
+corrupting the linked list's internal pointers mid-splice.
+
+TTL expiry piggybacks on the same eviction mechanism rather than needing a
+separate background sweep: each entry stores an expiration timestamp, and a
+lookup checks it before returning a hit, lazily evicting an expired entry
+the moment something tries to read it — trading a small per-read timestamp
+comparison for avoiding a second thread or timer mechanism entirely.
+
 ## Stretch goals
 
 - **Replace thread-per-connection with the thread pool** from

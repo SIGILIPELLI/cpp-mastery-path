@@ -377,6 +377,40 @@ routinely handle. Constructors are the strongest case for throwing — they have
 no return value, so an exception is the only way to refuse to create an invalid
 object.
 
+## How It Actually Works
+
+A custom exception type that derives from `std::exception` and stores extra
+data (an error code, a filename) is, in memory, laid out exactly like any
+other class from Module 1: a base `std::exception` subobject followed by
+your derived members. `throw MyError("...")` heap-allocates that object
+(implementations typically use a small dedicated exception-handling
+allocation, separate from the general heap, precisely so throwing doesn't
+fail even under memory pressure) and hands the unwinding mechanism a pointer
+to it along with its static type, which is how `catch (const MyError&)`
+versus `catch (const std::exception&)` can match a thrown object against
+different levels of its inheritance hierarchy — the runtime performs an
+`is-a` check up the exception's actual (dynamic) type chain, most-derived
+match first if you order your `catch` clauses correctly (base-class catches
+must come *after* derived-class catches, or the derived catch becomes
+unreachable dead code the compiler should warn about).
+
+The **strong exception guarantee** ("if this function throws, the object is
+left exactly as it was before the call") is implemented by convention, not
+by the language: a method that needs to change multiple pieces of state
+typically builds the *entire new state* in temporaries first, and only
+performs the final non-throwing pointer swap or move once everything has
+succeeded — so if an exception is thrown partway through, the object's real
+members were never touched. This is the same underlying idea as
+copy-and-swap for assignment operators.
+
+`noexcept` isn't just documentation — it changes generated code. A function
+marked `noexcept` that throws anyway calls `std::terminate` directly instead
+of unwinding, and the compiler can skip generating unwinding tables for
+`noexcept` functions in some cases, and — critically for move semantics —
+`std::vector` will only use a type's move constructor during reallocation
+if it's marked `noexcept`; otherwise it falls back to copying, to preserve
+the strong exception guarantee during growth.
+
 ## Exercise
 
 Build an exception hierarchy for a configuration loader.

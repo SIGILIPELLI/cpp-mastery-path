@@ -138,6 +138,37 @@ it can't accidentally be null.
 - Use a **pointer** when the value might legitimately be absent (`nullptr`),
   or when you need to reseat it to point somewhere else later.
 
+## How It Actually Works
+
+A pointer is a variable whose value is a memory address — literally an
+integer-sized (8 bytes on 64-bit systems) number that the CPU interprets as
+"start reading/writing here." `&x` computes the address the compiler already
+assigned `x` at compile time (its offset within the stack frame, or its
+address in static/heap memory); `*p` means "go to the address stored in `p`
+and read/write the bytes there." Dereferencing a pointer that holds garbage
+or a freed address is undefined behavior precisely because the CPU will
+happily read/write whatever is at that address — there's no safety net; it
+might belong to another variable, might be unmapped memory (causing a
+segmentation fault when the OS's memory manager notices), or might silently
+"work" and corrupt something else instead.
+
+A **reference** is not a separate runtime object at all in most
+implementations — the compiler treats `int& r = x;` as another *name* for
+the exact same memory location as `x`, and every use of `r` is compiled as
+if you'd written `x` directly (or, when it can't be resolved to a direct
+alias, as a pointer under the hood that the compiler dereferences
+automatically). This is why references can't be null and can't be
+reseated: the language enforces at compile time that a reference is bound
+once, to one existing object, so there's no "dangling address with no
+target" state to represent unless you deliberately create one by returning
+a reference to something that has already been destroyed — at which point
+the compiled code still tries to read that now-invalid memory location, no
+different in mechanism from a dangling pointer.
+
+`nullptr` is a pointer value guaranteed to compare unequal to every valid
+object address; dereferencing it triggers a hardware-level fault on virtually
+every platform because address `0` is deliberately left unmapped by the OS.
+
 ## Exercise
 
 Write a function `void swapValues(int& a, int& b)` that swaps two integers

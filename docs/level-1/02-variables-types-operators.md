@@ -122,6 +122,33 @@ std::cout << truncated << std::endl;   // 19
 types in C++ — prefer it over the old C-style `(int)price` cast, which is
 harder to search for and easier to misuse.
 
+## How It Actually Works
+
+Every fundamental type maps to a fixed number of bytes the compiler reserves
+either in a CPU register or on the stack — there's no hidden object header
+the way there is for, say, a Python `int`. On a typical 64-bit platform:
+`bool` is 1 byte, `int` is 4 bytes, `double` is 8 bytes, `char` is 1 byte.
+`sizeof(x)` asks the compiler for that number directly, computed entirely at
+compile time — it costs nothing at runtime.
+
+Declaring `int x = 5;` inside a function doesn't call any allocator: the
+compiler has already decided, while generating machine code for that
+function, how many bytes of stack space the function needs in total, and `x`
+is just a fixed offset into that reserved block (e.g. "4 bytes starting at
+`rbp - 12`" in x86-64 terms). Assigning to `x` is a single `mov` instruction.
+
+Type conversions are where the mechanism matters most. `int i = 3.9;` doesn't
+round — the compiler emits a truncating float-to-int conversion instruction,
+so the fractional part is discarded, giving `3`. Mixing `int` and `double` in
+an expression triggers **implicit promotion**: the `int` is widened to
+`double` *before* the operation, so `7 / 2` is integer division (`3`,
+remainder discarded at the machine level) while `7 / 2.0` promotes `7` to
+`7.0` first and does floating-point division. Integer overflow on signed
+types is undefined behavior — the bit pattern wraps according to two's
+complement in practice on virtually every real compiler, but the standard
+doesn't guarantee it, which is why sanitizers flag it even when the output
+"looks right."
+
 ## Exercise
 
 Write a program that declares a rectangle's `width` and `height` as `double`,

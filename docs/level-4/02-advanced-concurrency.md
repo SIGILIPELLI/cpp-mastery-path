@@ -335,6 +335,43 @@ a global lock ordering and document it.
 thousand times and fail in production; the increments-vanishing example above is
 reported instantly with both stack traces.
 
+## How It Actually Works
+
+`std::async`/`std::future` are built on a **shared state** object, allocated
+on the heap and reference-counted (similar bookkeeping to `shared_ptr`'s
+control block), that both the promise/task side and the future side hold a
+handle to. Calling `.get()` on a future that isn't ready yet blocks the
+calling thread the same way a mutex or condition variable wait does (Level
+3 Module 3) — internally, the shared state has its own condition variable
+that the producing side signals when it stores the result, so `get()`
+sleeps at the kernel level rather than polling. This is why a future can
+only be `.get()`-ed once: retrieving the value typically moves it out of the
+shared state, and the shared state itself is destroyed once both sides are
+done with it, driven entirely by RAII/reference-counting, not manual
+cleanup.
+
+`std::atomic<T>`'s memory-ordering parameters
+(`memory_order_relaxed/acquire/release/seq_cst`) exist because modern CPUs
+and compilers are allowed to **reorder memory operations** that don't have
+an observable dependency, for performance — a store to variable A followed
+by a store to variable B might become visible to another core in the
+opposite order unless you say otherwise. `memory_order_seq_cst` (the
+default) asks the compiler to emit whatever hardware fence instructions
+are needed to guarantee a single global order all threads agree on; `relaxed`
+asks for none, allowing the compiler and CPU maximum reordering freedom for
+raw counters where you don't care about ordering relative to other memory —
+this is a genuinely hardware-level knob, not just an API strictness setting.
+
+A **lock-free** data structure typically works via `compare_exchange`
+(CAS): read the current value, compute a new one, then atomically swap in
+the new value *only if* the location still holds what you originally read —
+implemented as a single hardware instruction (`cmpxchg` on x86) — retrying
+the whole read-compute-swap cycle if another thread got there first. This
+avoids ever putting a thread to sleep waiting on a mutex, at the cost of
+significantly harder-to-reason-about code, since any thread can be
+preempted between the read and the swap and see the structure in a state no
+single-threaded mental model would predict.
+
 ## Exercise
 
 Build a `ConcurrentCounter` map — `std::unordered_map<std::string, long>` behind

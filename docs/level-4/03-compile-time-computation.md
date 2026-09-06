@@ -273,6 +273,40 @@ is a runtime-ish function whose value the compiler knows; putting it in
 `if constexpr` makes the condition trivially true and silently deletes your
 runtime path. Use a plain `if`.
 
+## How It Actually Works
+
+`constexpr` functions are compiled *twice*, conceptually: the compiler
+generates the normal runtime machine code for the function as usual, but
+when it encounters a call in a **constant-evaluated context** (initializing
+a `constexpr` variable, an array bound, a template argument), it instead
+runs the function using an internal, restricted interpreter built into the
+compiler itself — actually executing the loops, branches, and arithmetic at
+compile time, subject to rules that forbid anything non-deterministic
+(heap allocation before C++20, reading uninitialized memory, calling
+non-`constexpr` functions). If it can't satisfy those rules for the given
+arguments, the compiler falls back to leaving it as an ordinary runtime
+call — this dual nature is exactly what "usable at compile time *or*
+runtime" means mechanically, not two different functions.
+
+`static_assert` performs its check using that same constant-evaluation
+engine but at a point in compilation before code generation even happens —
+a failing `static_assert` stops compilation outright with a message you
+control, which is why it's the standard way to validate template parameters
+(e.g. "T must be trivially copyable") entirely at build time, producing zero
+runtime code either way.
+
+Template metaprogramming (the older, C++03-era way of doing compile-time
+computation via recursive template instantiation — e.g. a `Factorial<N>`
+template that instantiates `Factorial<N-1>` recursively until a
+specialization for `Factorial<0>` stops it) achieves the same "compute at
+compile time" goal but through the instantiation mechanism from Level 3
+Module 1 rather than function execution: each recursive instantiation is a
+genuinely separate type/function the compiler generates, one per value of
+`N`, which is why deep template recursion can hit real compiler recursion
+limits and produce famously long error messages — `constexpr` functions
+replaced most of this because they let you write ordinary, debuggable,
+loop-based code instead of encoding arithmetic as type-level recursion.
+
 ## Exercise
 
 Build a compile-time, collision-checked HTTP status table.

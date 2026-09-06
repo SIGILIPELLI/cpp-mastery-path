@@ -318,6 +318,42 @@ optimization level, or CPU — never rely on it happening to work.
 `lock_guard`/`unique_lock` exist — never call `.lock()`/`.unlock()` directly
 in code that can throw between them.
 
+## How It Actually Works
+
+`std::thread` is a thin wrapper around the operating system's native thread
+creation call (`pthread_create` on POSIX systems, `CreateThread` on
+Windows). Each thread gets its **own stack** (a separate region of memory
+for local variables and call frames, typically a few MB, allocated by the
+OS at creation) but shares the *same* heap and global/static memory with
+every other thread in the process — that shared mutability is the entire
+source of data races: two threads incrementing the same `int` isn't atomic
+at the machine level (it's actually read-modify-write: load the value into
+a register, add one, store it back), so if both threads' loads happen before
+either's store, one increment is silently lost. A data race on a
+non-atomic variable is undefined behavior in the C++ standard, not merely
+"the wrong answer" — the compiler is permitted to assume no race exists and
+optimize accordingly, which can produce results even stranger than a lost
+update.
+
+`std::mutex` works by asking the OS kernel to arbitrate: `lock()` either
+succeeds immediately (if uncontended, often via a fast userspace atomic
+compare-and-swap with no kernel involvement at all) or, if another thread
+holds it, puts the calling thread to **sleep** (removed from the CPU's run
+queue entirely, at kernel level) until the mutex is released and the kernel
+wakes it back up — meaningfully different from spinning in a loop, which
+would burn CPU cycles instead. `std::lock_guard`/`std::unique_lock` are RAII
+wrappers (Module 4) around `lock()`/`unlock()`: the guard's destructor calls
+`unlock()`, which is what makes a mutex get released even if an exception is
+thrown while the lock is held — the same stack-unwinding mechanism from
+Level 1's exception module runs the guard's destructor during unwinding.
+
+`std::atomic<T>` operations compile to actual hardware-level atomic
+instructions (like `lock xadd` on x86) rather than a mutex — the CPU
+guarantees the read-modify-write happens as one indivisible step relative to
+every other core, which is why atomics avoid the OS-level sleep/wake cost of
+a mutex for simple counters, at the price of only working for operations the
+hardware directly supports.
+
 ## Exercise
 
 Build a thread-safe counter class `SafeCounter` wrapping an `int` and a

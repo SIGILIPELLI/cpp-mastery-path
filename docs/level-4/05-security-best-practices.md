@@ -280,6 +280,44 @@ unwinding automatic.
 **`std::random_device` is not guaranteed random.** The standard permits a
 deterministic implementation. Do not use it for keys.
 
+## How It Actually Works
+
+A **buffer overflow** is a direct consequence of the flat, unchecked memory
+model from Level 1: writing past the end of a stack array doesn't hit a
+guard rail, it overwrites whatever the compiler placed adjacent to that
+array in the stack frame — often other local variables, and, in the classic
+case, the saved return address pushed when the current function was called
+(Level 1 Module 4). Overwrite that return address with an attacker-chosen
+value and, when the function returns, the CPU jumps to that address instead
+of the legitimate caller — the mechanical basis of stack-smashing exploits.
+Compiler mitigations work at exactly this level: **stack canaries** place a
+known, randomized value between locals and the return address and check it
+before returning (a modified canary means an overflow happened, so the
+program aborts rather than jumping into attacker-controlled memory);
+**ASLR** (Address Space Layout Randomization) randomizes where the stack,
+heap, and libraries are loaded each run, so a hardcoded jump target from a
+previous exploit attempt is very unlikely to land anywhere useful.
+
+**Use-after-free** exploits the fact that `delete`/`free` doesn't erase
+memory or unmap it — it just marks the block as available to the allocator
+again. A dangling pointer that gets dereferenced after `delete` reads/writes
+memory that may still hold the old object's bytes (works "by luck") or may
+already have been handed out to a *different*, unrelated `new` call — at
+which point writing through the dangling pointer corrupts that other
+object's state, a bug whose symptom shows up somewhere completely unrelated
+to the actual defect. AddressSanitizer (ASan) catches this by instrumenting
+every allocation with "poisoned" guard regions and quarantining freed
+blocks instead of returning them to the allocator immediately, so a
+use-after-free hits still-poisoned memory and traps immediately at the
+faulting instruction rather than silently corrupting something else.
+
+Smart pointers (Level 2 Module 6) and bounds-checked containers close off
+these categories at the type-system level rather than relying on
+discipline: a `unique_ptr` cannot be double-freed because ownership is
+enforced by the deleted copy constructor, and `std::vector::at()` performs
+an explicit bounds check and throws rather than reading past the allocation
+the way `operator[]` (and raw array indexing) does with no check at all.
+
 ## Exercise
 
 Take a deliberately vulnerable parser and harden it, measuring the difference at

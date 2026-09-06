@@ -135,6 +135,34 @@ for (const auto& row : grid) {
 // 4 5 6
 ```
 
+## How It Actually Works
+
+A C-style array `int arr[5];` declared inside a function is just **five
+contiguous `int`-sized slots carved out of the current stack frame** — no
+allocator involved, no bookkeeping stored anywhere near it. `arr[2]` doesn't
+"look up" an element; it computes an address — `arr`'s base address plus
+`2 * sizeof(int)` — and reads/writes memory there directly. That's why
+arrays don't know their own length at runtime: the compiler only tracks the
+size while compiling (`sizeof(arr)` works because the compiler still has the
+type), but once the array decays to a raw pointer (e.g. when passed to a
+function), that information is gone, and out-of-bounds access silently reads
+or corrupts whatever memory happens to sit past the array — undefined
+behavior with no bounds check to catch it.
+
+`std::vector<int>` is a small, fixed-size object (typically three pointers:
+begin, end, and end-of-capacity) that sits wherever you declare it, but it
+owns a **separate block of heap memory** it allocates with `new[]` under the
+hood for the actual elements. `push_back` checks if there's spare capacity;
+if not, it allocates a *new*, larger block (commonly doubling the previous
+capacity), move-or-copy-constructs every existing element into it, and frees
+the old block — an operation that is `O(n)` on the rare occasions it happens,
+but averages out to **amortized O(1)** per push because doubling means it
+happens exponentially less often as the vector grows. This is also why
+inserting a lot of elements is faster when you `reserve()` capacity
+up-front: it eliminates the repeated reallocate-and-move cycles. And it's
+why a pointer or iterator into a vector can be silently invalidated by a
+`push_back` — the whole backing block may have moved to a new address.
+
 ## Exercise
 
 Write a program that builds a `std::vector<int>` of the squares of the

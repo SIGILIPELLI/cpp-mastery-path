@@ -308,6 +308,39 @@ operations.
 `operator new` had no alignment-aware overload and over-aligned types were
 silently under-aligned on the heap. Check your standard level if you rely on it.
 
+## How It Actually Works
+
+**Alignment** is a hardware constraint the compiler enforces, not a
+stylistic preference: many CPU instructions that load a multi-byte value
+(a `double`, a SIMD register's worth of data) either require the address to
+be a multiple of the type's size/alignment or silently run slower when it
+isn't — this is why the compiler inserts padding bytes between struct
+members (Level 1 Module 7) rather than packing them tightly, and why
+reordering a struct's members by descending size can shrink its total
+footprint by eliminating that padding, a real, measurable effect on cache
+behavior since fewer bytes per object means more objects fit in one cache
+line.
+
+Placement `new` (`new (ptr) T(args)`) separates the two things ordinary
+`new` bundles together: allocating raw memory, and running a constructor
+*into* already-allocated memory at a specific address you control — this is
+the actual mechanism a custom allocator or an object pool uses to reuse a
+fixed memory buffer across many object lifetimes without calling the system
+allocator each time, and it's exactly what `std::optional` (Level 4 Module
+1) and `std::vector` (which allocates a raw buffer with `operator new` then
+placement-constructs each element into it) rely on internally.
+
+`reinterpret_cast` and type punning touch the **strict aliasing rule**: the
+standard says the compiler is allowed to assume that pointers of unrelated
+types never refer to the same memory, and can optimize (reorder, cache
+values in registers) based on that assumption — which is why reinterpreting
+a `float*` as an `int*` and dereferencing it is technically undefined
+behavior even though it "works" on most compilers at `-O0`, and can produce
+silently wrong results once optimizations are enabled and the compiler
+exploits that same assumption. `memcpy`-ing bytes between types (or, since
+C++20, `std::bit_cast`) sidesteps this because it's defined purely in terms
+of byte copying, with no pointer-aliasing assumption involved.
+
 ## Exercise
 
 Implement a fixed-size **pool allocator** for a single object type and prove it

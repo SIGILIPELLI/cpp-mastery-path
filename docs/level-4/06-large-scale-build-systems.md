@@ -293,6 +293,39 @@ no-PCH configuration in CI.
 namespaces and `static` symbols; two files with a `static int counter;` now
 share one. Unity builds must be validated by a non-unity CI job.
 
+## How It Actually Works
+
+At scale, the build DAG from Level 2 Module 9 becomes the actual bottleneck,
+and the tools here attack it at the mechanism level. **Ninja** is deliberately
+"dumb" compared to Make on purpose: it takes a pre-computed, fully-expanded
+dependency graph (which CMake generates for it) and does the absolute
+minimum work to decide what's stale — no shell parsing, no recursive
+Makefile traversal — which is why generating Ninja files instead of
+Makefiles from the same `CMakeLists.txt` measurably speeds up incremental
+build startup on large projects, purely from lower per-invocation overhead.
+
+**Precompiled headers** exploit the fact that recompiling a translation unit
+re-parses every header it includes from scratch every time (Level 1 Module
+1's preprocessor step is genuinely re-run per file) — a PCH has the compiler
+parse a common set of heavy headers once, serialize the resulting internal
+parsed representation to disk, and then *load* that binary snapshot for
+every subsequent translation unit that includes the same headers, skipping
+re-parsing entirely. **Unity builds** attack the same cost differently: by
+`#include`-ing many `.cpp` files into one translation unit compiled once,
+you pay the parsing/template-instantiation cost for shared headers a single
+time across what used to be dozens of separate compiler invocations — at
+the real cost of coarser incrementality, since touching one file now forces
+recompiling the whole merged unit.
+
+**ccache** works by hashing a translation unit's *preprocessed* output
+(after macro expansion — Level 1's preprocessor stage again) plus the
+compiler flags, and if that exact hash was seen before, it hands back the
+previously-produced object file instead of invoking the compiler at all —
+which is why a `git checkout` back to a previous branch, or a CI cache
+restore, can turn a full rebuild into a near-instant one: nothing changed
+about the actual bytes fed to the compiler, so the cache key matches
+exactly, even though the source files changed identity on disk.
+
 ## Exercise
 
 Convert the [Level 3 task processor](../level-3/10-project-task-processor.md)

@@ -339,6 +339,35 @@ each component's build rules next to its code.
 | `add_subdirectory()` | Include another directory's CMakeLists.txt |
 | `add_test()` | Register a test with CTest |
 
+## How It Actually Works
+
+CMake is not a compiler — it's a **build-system generator**. Running
+`cmake` reads `CMakeLists.txt` and produces native build files (a
+`Makefile`, a Ninja build graph, an Xcode/Visual Studio project) tailored to
+your platform, and it's the second tool — `make`/`ninja` — that actually
+invokes the compiler and linker. This two-stage design is why the same
+`CMakeLists.txt` works across macOS, Linux, and Windows: CMake abstracts
+away the very different compiler flags and project formats each platform's
+native toolchain expects, generating the right low-level build instructions
+for whichever one it detects.
+
+The generated build graph tracks a real **dependency DAG** at the level of
+individual files: each `.cpp` gets a rule saying "rebuild this `.o` if this
+source file or any header it `#include`s (tracked via compiler-generated
+dependency files) has a newer modification time than the existing `.o`."
+That's the actual mechanism behind incremental builds — touching one `.cpp`
+file only triggers recompilation of that file and relinking, not a full
+rebuild, because `make`/`ninja` walks the DAG and skips any node whose
+inputs are all older than its output.
+
+Linking a library — `target_link_libraries` — instructs the linker to pull
+in a `.a` (static, whose object code is copied wholesale into your final
+executable at link time — no runtime dependency, larger binary) or `.so`/
+`.dylib` (dynamic/shared, where only a reference to the library is embedded
+and the OS's dynamic loader resolves and maps the actual library code into
+your process's address space at *program startup*, so multiple running
+programs can share one copy of the library in physical memory).
+
 ## Exercise
 
 Convert the Bank Account CLI from

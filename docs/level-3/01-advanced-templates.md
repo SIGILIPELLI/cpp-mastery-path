@@ -275,6 +275,40 @@ machine code, not one generic routine. This is usually a fair trade for the
 type safety and speed (no virtual dispatch), but it can inflate binary size
 if you instantiate the same template over dozens of unrelated types.
 
+## How It Actually Works
+
+**Template specialization** exploits the same instantiation mechanism from
+Level 2 but lets you hand-write a *different* body for a specific type
+instead of letting the compiler generate one from the generic template. The
+compiler's overload-resolution-like process for templates always prefers the
+most specialized match available — a full specialization for `bool`, say,
+over the generic `template<typename T>` — so `Container<bool>` and
+`Container<int>` can compile to completely unrelated machine code even
+though they share a name and interface; this is the exact mechanism
+`std::vector<bool>` uses to pack booleans into individual bits instead of
+one byte each.
+
+**SFINAE** ("Substitution Failure Is Not An Error") relies on a specific
+compiler behavior: when substituting a candidate template's type parameters
+during overload resolution produces an *invalid* expression (e.g. referring
+to a member type that type doesn't have), the compiler doesn't hard-error —
+it silently removes that candidate from consideration and tries the next
+one, exactly as if it had never been written. `std::enable_if` is built
+entirely on this: it's a template that only defines a nested `::type` when
+its boolean condition is true, so referencing that missing `::type` in a
+function's return type or template parameter list triggers the
+substitution-failure removal path for types that don't satisfy the
+condition — no runtime branching at all, purely a compile-time filter over
+which overload is legal to instantiate.
+
+**Concepts** (C++20) formalize the same idea with actual compiler support: a
+concept is a named, checkable compile-time predicate over a type, and a
+template constrained by one fails to compile with a direct, readable error
+pointing at exactly which requirement wasn't met — a much better developer
+experience for what SFINAE was already doing under the hood, but the
+underlying decision (is this candidate viable to instantiate at all) happens
+at the same phase of compilation either way.
+
 ## Exercise
 
 Write a class template `Box<T>` holding one value of type `T`, with a

@@ -212,6 +212,39 @@ ever reaches zero, and both leak. If a back-reference is needed, make it a
 `weak_ptr`, exactly as with the cycles discussed in
 [Level 2's smart pointers module](../level-2/06-smart-pointers.md).
 
+## How It Actually Works
+
+The C++-idiomatic versions of these patterns differ from the textbook forms
+specifically because C++ has RAII and value semantics that other languages
+lack, and the mechanism-level reasons matter:
+
+- A **Factory** returning `std::unique_ptr<Base>` relies on exactly the
+  same polymorphic-through-pointer mechanism as Level 2's library project —
+  the factory function's return type is `Base*`-shaped (wrapped for safety),
+  but the vptr installed by whichever concrete constructor actually ran
+  determines real behavior at every call site, with ownership transferred to
+  the caller via a move (no reference counting needed, unlike factories in
+  garbage-collected languages that hand out shared references implicitly).
+- **Singleton** implemented as a function-local `static` object relies on a
+  specific, standard-guaranteed mechanism: the first call to the function
+  triggers construction, and the compiler inserts a hidden
+  **thread-safe initialization check** (a guard variable, checked with an
+  atomic operation) around that first-time construction — this is mandated
+  by the standard since C++11 specifically so concurrent first calls from
+  multiple threads don't race and construct the object twice.
+- **Observer** implemented with `std::function` callbacks stores type-erased
+  closures — `std::function` internally holds either a small inline buffer
+  (small-object optimization, mirroring `std::string`'s SSO) or a
+  heap-allocated wrapper around whatever callable was assigned, plus a
+  vtable-like set of function pointers for "call this," "copy this,"
+  "destroy this" — which is how one `std::function<void(int)>` member can
+  hold a lambda, a function pointer, or a bound member function
+  interchangeably at the cost of one indirect call per invocation.
+- **RAII-based Strategy/Decorator** compositions rely on the same
+  destructor-ordering guarantees from Module 4 to guarantee wrapped
+  behaviors unwind in the right order even under exceptions, something the
+  Java/C# versions of these patterns don't get for free.
+
 ## Exercise
 
 Extend the shape factory with a `Triangle` (base and height) and register it

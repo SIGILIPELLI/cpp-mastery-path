@@ -284,6 +284,37 @@ pts.emplace_back(1, 2);       // construct IN PLACE from the arguments -- no tem
 skipping the temporary entirely. For cheap types the difference is negligible;
 for types holding heap memory (`std::string`, other containers) it's real.
 
+## How It Actually Works
+
+Each container's performance characteristics come directly from its actual
+memory layout, not from an abstract "interface contract":
+
+- **`std::vector`** is one contiguous heap block. Indexing (`v[i]`) is
+  pointer arithmetic — one addition, one dereference — which is also why
+  vectors are cache-friendly: reading `v[i]` pulls a whole cache line
+  (typically 64 bytes) into the CPU cache, so nearby elements are already
+  loaded for the next iteration. Inserting in the middle requires
+  shifting every following element one slot over — a real `memmove`.
+- **`std::list`** is a doubly-linked list: every element is a *separate*
+  heap allocation containing the value plus two pointers (prev/next).
+  Insertion/removal at a known position is O(1) with no shifting — but each
+  node lives at an arbitrary, unrelated heap address, so traversal jumps
+  around memory unpredictably, defeating the CPU cache almost entirely.
+  This is why `std::list` is usually *slower* in practice than `std::vector`
+  even for workloads that look like a textbook "insert in the middle" case.
+- **`std::map`** is a balanced binary search tree (red-black tree in
+  practice), giving guaranteed O(log n) lookup by walking down the tree
+  comparing keys — each step is another pointer-chasing heap access, again
+  cache-unfriendly compared to a flat array, but the ordering (`begin()` to
+  `end()` yields sorted keys) falls directly out of the tree structure.
+- **`std::unordered_map`** is a hash table: an array of "buckets," where a
+  key's hash value modulo the bucket count picks which bucket to search
+  (each bucket is typically a small linked list for collision handling).
+  This gives average O(1) lookup, but a bad hash function or a resize
+  (rehashing every element into a larger bucket array) can degrade that or
+  cost an O(n) pass — which is why iteration order over an `unordered_map`
+  is unspecified and can change after any insertion that triggers a resize.
+
 ## Exercise
 
 Write a word-frequency counter. Read all whitespace-separated words from a

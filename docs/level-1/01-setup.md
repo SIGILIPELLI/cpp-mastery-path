@@ -100,6 +100,36 @@ your platform's default (Xcode on macOS, Visual Studio on Windows). VS Code is
 the most common lightweight choice — pick one and move on, since the editor
 matters far less than practice.
 
+## How It Actually Works
+
+When you run `g++`/`clang++` on a `.cpp` file, four distinct programs run in
+sequence, not one:
+
+1. **Preprocessor** — textually expands `#include` (literally pastes the
+   header's contents in), macros, and `#ifdef` blocks. The output is one huge
+   "translation unit" of pure C++ with no directives left.
+2. **Compiler proper** — parses that translation unit, type-checks it, and
+   lowers it to assembly for your target CPU (x86-64, ARM64, ...). This is
+   where `int main()` becomes real machine instructions — a prologue that
+   reserves stack space, instructions for each statement, an epilogue that
+   restores the stack and returns.
+3. **Assembler** — turns the assembly text into an **object file** (`.o`),
+   raw machine code plus a symbol table (a list of names like `main` and
+   where they live in the file, so other tools can find them).
+4. **Linker** — combines your object file(s) with the C++ standard library's
+   already-compiled object code (`iostream`'s internals aren't
+   recompiled — they're pre-built), resolves every symbol reference to a
+   final address, and produces one executable.
+
+This is why a syntax error is a *compiler* error but calling an undefined
+function is a *linker* error ("undefined reference") — the compiler is happy
+to emit a call to a symbol it hasn't seen the body of yet; only the linker
+notices nothing defines it. It's also why C++ compiles to native code with no
+runtime interpreter: the executable you get is CPU instructions the OS loads
+directly, which is why C++ programs start instantly and why a binary built
+for macOS/ARM64 won't run on Linux/x86 — there's no portable bytecode layer
+like a JVM or CLR sits underneath.
+
 ## Exercise
 
 Write a program `greeter.cpp` with a `main` function that prints a greeting

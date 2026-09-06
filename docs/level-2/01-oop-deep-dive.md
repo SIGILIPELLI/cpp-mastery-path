@@ -308,6 +308,38 @@ than replace behaviour.
 | `final` | `class D final` / `void f() final` | Blocks further derivation; enables devirtualisation |
 | `protected` | `protected: int x;` | Visible to derived classes, not to the outside |
 
+## How It Actually Works
+
+A base class with `virtual` functions gains a hidden member: the **vptr**
+(virtual table pointer), typically the first 8 bytes of every object of that
+type. It points at a **vtable** — one per *class*, not per object, generated
+once by the compiler — an array of function-pointer slots, one per virtual
+function. When a derived class overrides a function, its vtable has that
+slot pointing at the derived implementation instead of the base one; slots
+it doesn't override still point at the inherited base implementation.
+
+Calling `shape->area()` on a `Shape*` that actually points at a `Circle`
+compiles into: load the vptr from the object, index into the vtable at the
+fixed slot assigned to `area`, and call whatever address is there — an
+extra memory load and an indirect call compared to a plain function call,
+which is the real (small but nonzero) cost of virtual dispatch. Crucially,
+*which* object the vptr points at determines *which* vtable is consulted, at
+runtime — that's the entire mechanism behind polymorphism: the pointer's
+static type (`Shape*`) only matters for what the compiler will *allow* you
+to call; the vptr installed by whichever constructor actually ran
+(`Circle`'s) determines what runs.
+
+This is also why constructors can't dispatch virtually: while `Shape`'s
+constructor is running, the object's vptr still points at `Shape`'s vtable
+(the derived constructor hasn't run yet to install `Circle`'s), so calling a
+virtual function from a base constructor invokes the *base* version even if
+the concrete object is a `Circle`. A base class destructor that isn't marked
+`virtual` is a real bug for the same reason in reverse: `delete basePtr;`
+without a virtual destructor looks up no vtable at all — it calls the
+destructor whose address was hardcoded at compile time from the *static*
+type, skipping the derived class's cleanup and leaking any resources it
+owned.
+
 ## Exercise
 
 Build a small shape hierarchy. Define an abstract class `Shape` with pure

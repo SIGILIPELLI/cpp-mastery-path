@@ -196,6 +196,36 @@ must eventually reach a matching `close()` on every code path, including
 error returns — exactly the RAII problem from Module 4, and exactly why the
 `Socket` wrapper above exists.
 
+## How It Actually Works
+
+A **socket** is a handle the OS kernel gives your process — mechanically
+the same kind of file-descriptor abstraction as an open file (Level 2's
+file I/O module), which is why socket I/O uses the same `read`/`write`-style
+syscalls under the hood. Creating a TCP socket and calling `connect()`
+triggers the kernel's networking stack to perform an actual **three-way
+handshake** (SYN, SYN-ACK, ACK) at the TCP protocol level before your
+`connect()` call returns successfully — this is why establishing a
+connection has real, measurable latency (at minimum one round trip to the
+remote host) even before a single byte of your application data is sent.
+
+TCP presents itself to your program as a reliable, ordered **byte stream**,
+not discrete messages — this is a real architectural fact, not just an API
+quirk: the kernel is free to buffer, coalesce, or split your `send()` calls
+into however many underlying IP packets it wants, and a `recv()` on the
+other end can return fewer bytes than were sent in one call, or bytes from
+multiple `send()` calls concatenated together. This is exactly why
+application protocols built on TCP need their own framing (a length prefix,
+a delimiter) — the transport layer guarantees byte order and delivery, but
+has no concept of "where one message ends and the next begins."
+
+Blocking socket calls (`recv()` with no data available) put the calling
+thread to sleep at the kernel level, identical in mechanism to a mutex
+`lock()` waiting on a contended lock (Module 3) — the kernel removes the
+thread from the CPU run queue and wakes it via an interrupt once data
+arrives on the socket's receive buffer, which is why a naive blocking
+server can only handle one connection per thread without either spawning a
+thread per client or using non-blocking/async I/O.
+
 ## Exercise
 
 Turn the `Socket` class above into a complete RAII wrapper with `bind()`,
