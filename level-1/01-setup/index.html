@@ -784,6 +784,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2283,6 +2294,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2421,6 +2443,34 @@ exactly where every name comes from.</p>
 your platform's default (Xcode on macOS, Visual Studio on Windows). VS Code is
 the most common lightweight choice — pick one and move on, since the editor
 matters far less than practice.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>When you run <code>g++</code>/<code>clang++</code> on a <code>.cpp</code> file, four distinct programs run in
+sequence, not one:</p>
+<ol>
+<li><strong>Preprocessor</strong> — textually expands <code>#include</code> (literally pastes the
+   header's contents in), macros, and <code>#ifdef</code> blocks. The output is one huge
+   "translation unit" of pure C++ with no directives left.</li>
+<li><strong>Compiler proper</strong> — parses that translation unit, type-checks it, and
+   lowers it to assembly for your target CPU (x86-64, ARM64, ...). This is
+   where <code>int main()</code> becomes real machine instructions — a prologue that
+   reserves stack space, instructions for each statement, an epilogue that
+   restores the stack and returns.</li>
+<li><strong>Assembler</strong> — turns the assembly text into an <strong>object file</strong> (<code>.o</code>),
+   raw machine code plus a symbol table (a list of names like <code>main</code> and
+   where they live in the file, so other tools can find them).</li>
+<li><strong>Linker</strong> — combines your object file(s) with the C++ standard library's
+   already-compiled object code (<code>iostream</code>'s internals aren't
+   recompiled — they're pre-built), resolves every symbol reference to a
+   final address, and produces one executable.</li>
+</ol>
+<p>This is why a syntax error is a <em>compiler</em> error but calling an undefined
+function is a <em>linker</em> error ("undefined reference") — the compiler is happy
+to emit a call to a symbol it hasn't seen the body of yet; only the linker
+notices nothing defines it. It's also why C++ compiles to native code with no
+runtime interpreter: the executable you get is CPU instructions the OS loads
+directly, which is why C++ programs start instantly and why a binary built
+for macOS/ARM64 won't run on Linux/x86 — there's no portable bytecode layer
+like a JVM or CLR sits underneath.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Write a program <code>greeter.cpp</code> with a <code>main</code> function that prints a greeting
 for three different names, one per line, using <code>std::cout</code>. Compile it with

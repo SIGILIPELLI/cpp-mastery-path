@@ -1569,6 +1569,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2349,6 +2360,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2642,6 +2664,36 @@ own compiled function or class — <code>sum&lt;int&gt;</code> and <code>sum&lt;
 machine code, not one generic routine. This is usually a fair trade for the
 type safety and speed (no virtual dispatch), but it can inflate binary size
 if you instantiate the same template over dozens of unrelated types.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p><strong>Template specialization</strong> exploits the same instantiation mechanism from
+Level 2 but lets you hand-write a <em>different</em> body for a specific type
+instead of letting the compiler generate one from the generic template. The
+compiler's overload-resolution-like process for templates always prefers the
+most specialized match available — a full specialization for <code>bool</code>, say,
+over the generic <code>template&lt;typename T&gt;</code> — so <code>Container&lt;bool&gt;</code> and
+<code>Container&lt;int&gt;</code> can compile to completely unrelated machine code even
+though they share a name and interface; this is the exact mechanism
+<code>std::vector&lt;bool&gt;</code> uses to pack booleans into individual bits instead of
+one byte each.</p>
+<p><strong>SFINAE</strong> ("Substitution Failure Is Not An Error") relies on a specific
+compiler behavior: when substituting a candidate template's type parameters
+during overload resolution produces an <em>invalid</em> expression (e.g. referring
+to a member type that type doesn't have), the compiler doesn't hard-error —
+it silently removes that candidate from consideration and tries the next
+one, exactly as if it had never been written. <code>std::enable_if</code> is built
+entirely on this: it's a template that only defines a nested <code>::type</code> when
+its boolean condition is true, so referencing that missing <code>::type</code> in a
+function's return type or template parameter list triggers the
+substitution-failure removal path for types that don't satisfy the
+condition — no runtime branching at all, purely a compile-time filter over
+which overload is legal to instantiate.</p>
+<p><strong>Concepts</strong> (C++20) formalize the same idea with actual compiler support: a
+concept is a named, checkable compile-time predicate over a type, and a
+template constrained by one fails to compile with a direct, readable error
+pointing at exactly which requirement wasn't met — a much better developer
+experience for what SFINAE was already doing under the hood, but the
+underlying decision (is this candidate viable to instantiate at all) happens
+at the same phase of compilation either way.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Write a class template <code>Box&lt;T&gt;</code> holding one value of type <code>T</code>, with a
 <code>describe()</code> method that prints the value. Then:</p>

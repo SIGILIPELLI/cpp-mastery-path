@@ -1821,6 +1821,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stretch-goals" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2349,6 +2360,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stretch-goals" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2710,6 +2732,32 @@ ten 20 ms jobs across four workers takes three rounds, not two and a half.</p>
 </code></pre></div>
 <p>Run these under <code>--gtest_repeat=100</code>. Concurrency bugs pass once and fail on the
 fortieth run; a single green test proves very little.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>The thread pool's shared queue is where every concurrency mechanism from
+Module 3 comes together in one real data structure. Worker threads block on
+a <code>std::condition_variable</code> when the queue is empty rather than
+busy-spinning in a loop checking <code>empty()</code> repeatedly — <code>wait()</code> atomically
+releases the associated mutex and puts the thread to sleep at the kernel
+level (identical mechanism to a blocked <code>mutex::lock()</code>), so idle workers
+consume no CPU at all until <code>notify_one()</code>/<code>notify_all()</code> wakes them, which
+happens exactly when the producer pushes a new task while holding the same
+mutex. The mutex around the queue is what prevents two workers from both
+popping the same task (a race that would otherwise let two threads execute
+the identical job, or corrupt the underlying <code>std::queue</code>'s internal state
+mid-pop) — every push/pop is a critical section exactly one thread executes
+at a time.</p>
+<p>Each task submitted as a <code>std::function&lt;void()&gt;</code> is a type-erased callable
+(Module 5's Observer discussion applies identically here): the pool doesn't
+need to know the concrete lambda type each caller submits, only that it can
+be invoked with no arguments, which is what lets <code>submit()</code> accept
+arbitrary lambdas capturing arbitrary data.</p>
+<p>Shutting the pool down cleanly relies on RAII again: the pool's destructor
+sets a stop flag (checked under the same mutex) and calls
+<code>notify_all()</code> so every sleeping worker wakes up, sees the flag, and returns
+from its loop instead of blocking forever — then joins each <code>std::thread</code>,
+which blocks the calling thread until each worker's OS thread has actually
+exited, guaranteeing no worker is left mid-task (or dangling with a
+reference to a destroyed queue) once the pool object itself is gone.</p>
 <h2 id="stretch-goals">Stretch goals<a class="headerlink" href="#stretch-goals" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Make <code>submit()</code> return a <code>std::future&lt;T&gt;</code> so a caller can retrieve a task's

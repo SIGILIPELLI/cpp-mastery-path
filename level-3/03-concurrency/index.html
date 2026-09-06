@@ -1636,6 +1636,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2371,6 +2382,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2705,6 +2727,38 @@ optimization level, or CPU — never rely on it happening to work.</p>
 <p><strong>Forgetting to unlock manually-managed mutexes on an exception path</strong> is why
 <code>lock_guard</code>/<code>unique_lock</code> exist — never call <code>.lock()</code>/<code>.unlock()</code> directly
 in code that can throw between them.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p><code>std::thread</code> is a thin wrapper around the operating system's native thread
+creation call (<code>pthread_create</code> on POSIX systems, <code>CreateThread</code> on
+Windows). Each thread gets its <strong>own stack</strong> (a separate region of memory
+for local variables and call frames, typically a few MB, allocated by the
+OS at creation) but shares the <em>same</em> heap and global/static memory with
+every other thread in the process — that shared mutability is the entire
+source of data races: two threads incrementing the same <code>int</code> isn't atomic
+at the machine level (it's actually read-modify-write: load the value into
+a register, add one, store it back), so if both threads' loads happen before
+either's store, one increment is silently lost. A data race on a
+non-atomic variable is undefined behavior in the C++ standard, not merely
+"the wrong answer" — the compiler is permitted to assume no race exists and
+optimize accordingly, which can produce results even stranger than a lost
+update.</p>
+<p><code>std::mutex</code> works by asking the OS kernel to arbitrate: <code>lock()</code> either
+succeeds immediately (if uncontended, often via a fast userspace atomic
+compare-and-swap with no kernel involvement at all) or, if another thread
+holds it, puts the calling thread to <strong>sleep</strong> (removed from the CPU's run
+queue entirely, at kernel level) until the mutex is released and the kernel
+wakes it back up — meaningfully different from spinning in a loop, which
+would burn CPU cycles instead. <code>std::lock_guard</code>/<code>std::unique_lock</code> are RAII
+wrappers (Module 4) around <code>lock()</code>/<code>unlock()</code>: the guard's destructor calls
+<code>unlock()</code>, which is what makes a mutex get released even if an exception is
+thrown while the lock is held — the same stack-unwinding mechanism from
+Level 1's exception module runs the guard's destructor during unwinding.</p>
+<p><code>std::atomic&lt;T&gt;</code> operations compile to actual hardware-level atomic
+instructions (like <code>lock xadd</code> on x86) rather than a mutex — the CPU
+guarantees the read-modify-write happens as one indivisible step relative to
+every other core, which is why atomics avoid the OS-level sleep/wake cost of
+a mutex for simple counters, at the price of only working for operations the
+hardware directly supports.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Build a thread-safe counter class <code>SafeCounter</code> wrapping an <code>int</code> and a
 <code>std::mutex</code>, with <code>increment()</code> and <code>int value() const</code> methods (the latter

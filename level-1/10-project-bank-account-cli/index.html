@@ -1036,6 +1036,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stretch-goals" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2283,6 +2294,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stretch-goals" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2477,6 +2499,30 @@
 <a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>Amount: 500
 <a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>Error: Insufficient funds
 </code></pre></div>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>Splitting <code>Account</code> into <code>account.h</code> and <code>account.cpp</code> reflects the
+compilation model directly: each <code>.cpp</code> file is compiled <em>independently</em> into
+its own object file, and the header is what lets <code>main.cpp</code> know <code>Account</code>'s
+shape (its members and method signatures) without seeing <code>account.cpp</code>'s
+bodies. The compiler only needs the declaration to generate correct calling
+code (it needs to know the class's size and each method's address will exist
+somewhere); the linker later stitches the call in <code>main.cpp</code>'s object file to
+the actual compiled body sitting in <code>account.cpp</code>'s object file. This is why
+changing a method's <em>implementation</em> only requires recompiling <code>account.cpp</code>
+and relinking, while changing the header (adding a member, changing a
+signature) forces every file that includes it to recompile — the compiler
+has to regenerate code with a different memory layout or call signature
+everywhere that layout is assumed.</p>
+<p>Each <code>Account</code> object created on the stack in <code>main</code> owns its <code>balance</code> and
+<code>name</code> members inline — a <code>std::vector&lt;Account&gt;</code> holding several accounts
+stores every account's full data contiguously in one heap block, not as
+scattered pointers to separately-allocated objects, so iterating over
+accounts to print balances is a straight linear memory scan rather than a
+chase through indirect pointers. When an <code>Account</code> throws from a withdrawal
+method (insufficient funds) and <code>main</code> catches it, the exception-unwinding
+machinery from the previous chapter is what guarantees any partially-built
+temporary objects along the way get properly destroyed before control
+reaches the <code>catch</code> block.</p>
 <h2 id="stretch-goals">Stretch goals<a class="headerlink" href="#stretch-goals" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Add a <code>transfer</code> operation between two accounts (deposit + withdraw as one

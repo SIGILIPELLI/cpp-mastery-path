@@ -1586,6 +1586,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2327,6 +2338,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2625,6 +2647,38 @@ operations.</p>
 <p><strong>A moved-from object is still a live object.</strong> It will still be destroyed,
 and it can still be assigned to — but calling ordinary methods on it before
 reassigning is asking for surprises, even if it technically compiles.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>An <strong>rvalue reference</strong> (<code>T&amp;&amp;</code>) is a distinct type the overload-resolution
+mechanism uses to detect "this argument is a temporary, safe to cannibalize"
+versus an lvalue reference (<code>T&amp;</code>), which means "this argument is a named
+object someone else still needs." The compiler determines this purely from
+the <em>expression's</em> category at the call site — a temporary returned by
+value, or the explicit result of <code>std::move()</code>, binds to <code>T&amp;&amp;</code> overloads in
+preference to <code>T&amp;</code>; a named variable binds to <code>T&amp;</code> unless explicitly cast.
+Critically, <code>std::move</code> does not move anything by itself — it's a <code>static_cast</code>
+to an rvalue reference type, purely a compile-time signal that tells overload
+resolution "treat this named object as movable," and it's entirely up to the
+selected move constructor/assignment to actually act on that.</p>
+<p>A move constructor for something like <code>std::vector&lt;int&gt;</code> doesn't copy any
+elements at all: it copies the <em>source's</em> three internal pointers (begin,
+end, capacity-end — see Level 1 Module 5) into the new object and sets the
+source's pointers to <code>nullptr</code>. That's the entire operation — three pointer
+copies and three null-outs, versus a copy constructor's O(n) allocate-and-
+duplicate-every-element. This is why moving a vector of a million strings is
+essentially free while copying it is not: ownership of the <em>same</em> heap
+buffer transfers to the new object, and the old object is left in a valid
+but unspecified ("moved-from") state — specifically empty, for a
+well-behaved <code>vector</code>, precisely so its destructor (which will still run)
+safely does nothing rather than double-freeing memory the new object now
+owns.</p>
+<p><strong>Perfect forwarding</strong> (<code>std::forward</code>) solves a narrower problem inside
+templates: a function parameter <code>T&amp;&amp;</code> in a template context is a "forwarding
+reference" that can bind to <em>either</em> an lvalue or rvalue, but once it has a
+name inside the function body, it's itself an lvalue (named things are
+always lvalues) — so passing it onward naively would always copy.
+<code>std::forward&lt;T&gt;(x)</code> conditionally casts it back to an rvalue only if <code>T</code> was
+deduced as a non-reference type, preserving whichever value category the
+original caller passed in, all the way through a chain of forwarding calls.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Give the <code>Buffer</code> class above a <code>Buffer(const Buffer&amp;) = delete;</code> (make it
 move-only, like <code>std::unique_ptr</code>), keeping the move constructor and move

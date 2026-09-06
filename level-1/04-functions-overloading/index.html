@@ -879,6 +879,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2305,6 +2316,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2454,6 +2476,32 @@ you typically <strong>declare</strong> a function's signature (often in a header
 </code></pre></div>
 <p>This becomes essential once code is split across multiple <code>.cpp</code> and <code>.h</code>
 files, which you'll do starting in <a href="../10-project-bank-account-cli/">Module 10</a>.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>Calling a function is a real, costed operation in C++: the CPU pushes a
+<strong>stack frame</strong>. Concretely, calling <code>f(a, b)</code> involves pushing the
+arguments (or loading them into designated argument registers per the ABI —
+Application Binary Interface, the agreed-upon calling convention), pushing
+the <strong>return address</strong> (where execution should resume after <code>f</code> finishes),
+jumping to <code>f</code>'s code, and inside <code>f</code>, reserving stack space for its local
+variables. Returning pops that frame and jumps back to the saved return
+address. Every level of function-call nesting adds another frame to the call
+stack — which is exactly why unbounded recursion eventually crashes with a
+stack overflow: each frame consumes real memory in a fixed-size region.</p>
+<p>Overloading is resolved entirely at <strong>compile time</strong>, not runtime — there's
+no dispatch cost. When you write <code>print(5)</code> and <code>print(5.0)</code>, the compiler
+looks at the argument types, matches them against every <code>print</code> overload's
+parameter list, and picks one using a ranked set of rules (exact match beats
+promotion, promotion beats standard conversion, and so on). By the time the
+program runs, the ambiguity is already gone — the generated machine code has
+a direct call to one specific address; there's no runtime "which overload"
+check like there is with virtual dispatch. This is also why overload
+resolution can fail to compile ("ambiguous call") — the compiler must be
+able to pick exactly one candidate using its rules, with no runtime fallback
+to break a tie.</p>
+<p>Passing arguments <strong>by value</strong> copies bytes onto the callee's stack frame
+(cheap for an <code>int</code>, potentially expensive for a large <code>struct</code>); passing
+<strong>by reference</strong> just passes the address, so the callee operates on the
+caller's original memory with no copy at all.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Write overloaded functions named <code>area</code>: one taking a single <code>double</code> (for a
 square's side), one taking two <code>double</code>s (for a rectangle's width and

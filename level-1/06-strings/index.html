@@ -946,6 +946,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2327,6 +2338,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2467,6 +2489,31 @@ function to every character) is a common one worth recognizing early.</p>
 <p><code>std::ostringstream</code> is handy when you need to build up a formatted string
 from mixed types (numbers, strings) without a lot of manual <code>std::to_string</code>
 and <code>+</code> calls.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p><code>std::string</code> is not a primitive — it's a class that manages a heap-allocated
+buffer of characters, much like <code>std::vector&lt;char&gt;</code> internally, plus a
+null terminator it maintains automatically so <code>.c_str()</code> can hand raw C APIs
+a valid C-string. Most implementations also apply <strong>Small String
+Optimization (SSO)</strong>: strings shorter than roughly 15-22 characters
+(implementation-dependent) are stored directly inside the <code>std::string</code>
+object's own stack/member memory, with no heap allocation at all. Only once
+a string grows past that threshold does it allocate on the heap — which is
+why short strings are essentially free to copy and construct, while long
+ones incur a real <code>new[]</code> call.</p>
+<p>Concatenating with <code>+</code> on <code>std::string</code> allocates a brand-new buffer sized
+to hold both operands and copies both into it — repeated concatenation in a
+loop (<code>result += s;</code> many times) can trigger the same reallocate-and-copy
+growth pattern as <code>std::vector</code>, which is why <code>+=</code>/<code>append</code> on the same
+string object is cheaper than chaining <code>+</code> to build new temporaries
+repeatedly.</p>
+<p>Raw C-style <code>char*</code> strings, by contrast, are just a pointer to the first
+byte of a sequence that keeps going until a <code>'\0'</code> byte is found — there's no
+length stored anywhere, so <code>strlen</code> has to scan byte-by-byte until it hits
+that terminator. This is the root cause of classic C string bugs: read or
+write past the terminator (or forget it entirely) and every string function
+either walks off into unrelated memory or corrupts it. <code>std::string</code> sidesteps
+this by tracking its length explicitly as a member field, so <code>.size()</code> is an
+O(1) lookup, not a scan.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Write a function <code>std::string reverseWords(const std::string&amp; sentence)</code> that
 takes a sentence and returns it with the order of words reversed (e.g. <code>"The

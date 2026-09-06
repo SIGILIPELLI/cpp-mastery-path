@@ -907,6 +907,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2305,6 +2316,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2445,6 +2467,31 @@ the range. Exceptions are covered in <a href="../09-exception-handling/">Module 
 <a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="c1">// 1 2 3</span>
 <a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="c1">// 4 5 6</span>
 </code></pre></div>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>A C-style array <code>int arr[5];</code> declared inside a function is just <strong>five
+contiguous <code>int</code>-sized slots carved out of the current stack frame</strong> — no
+allocator involved, no bookkeeping stored anywhere near it. <code>arr[2]</code> doesn't
+"look up" an element; it computes an address — <code>arr</code>'s base address plus
+<code>2 * sizeof(int)</code> — and reads/writes memory there directly. That's why
+arrays don't know their own length at runtime: the compiler only tracks the
+size while compiling (<code>sizeof(arr)</code> works because the compiler still has the
+type), but once the array decays to a raw pointer (e.g. when passed to a
+function), that information is gone, and out-of-bounds access silently reads
+or corrupts whatever memory happens to sit past the array — undefined
+behavior with no bounds check to catch it.</p>
+<p><code>std::vector&lt;int&gt;</code> is a small, fixed-size object (typically three pointers:
+begin, end, and end-of-capacity) that sits wherever you declare it, but it
+owns a <strong>separate block of heap memory</strong> it allocates with <code>new[]</code> under the
+hood for the actual elements. <code>push_back</code> checks if there's spare capacity;
+if not, it allocates a <em>new</em>, larger block (commonly doubling the previous
+capacity), move-or-copy-constructs every existing element into it, and frees
+the old block — an operation that is <code>O(n)</code> on the rare occasions it happens,
+but averages out to <strong>amortized O(1)</strong> per push because doubling means it
+happens exponentially less often as the vector grows. This is also why
+inserting a lot of elements is faster when you <code>reserve()</code> capacity
+up-front: it eliminates the repeated reallocate-and-move cycles. And it's
+why a pointer or iterator into a vector can be silently invalidated by a
+<code>push_back</code> — the whole backing block may have moved to a new address.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Write a program that builds a <code>std::vector&lt;int&gt;</code> of the squares of the
 numbers 1 through 10 (using <code>push_back</code> in a loop), then prints the vector's

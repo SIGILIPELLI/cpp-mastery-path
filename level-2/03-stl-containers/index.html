@@ -1238,6 +1238,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2327,6 +2338,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2681,6 +2703,36 @@ bug that often "works" in testing and crashes in production.</p>
 <p><code>emplace_back</code> forwards its arguments straight to the element's constructor,
 skipping the temporary entirely. For cheap types the difference is negligible;
 for types holding heap memory (<code>std::string</code>, other containers) it's real.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>Each container's performance characteristics come directly from its actual
+memory layout, not from an abstract "interface contract":</p>
+<ul>
+<li><strong><code>std::vector</code></strong> is one contiguous heap block. Indexing (<code>v[i]</code>) is
+  pointer arithmetic — one addition, one dereference — which is also why
+  vectors are cache-friendly: reading <code>v[i]</code> pulls a whole cache line
+  (typically 64 bytes) into the CPU cache, so nearby elements are already
+  loaded for the next iteration. Inserting in the middle requires
+  shifting every following element one slot over — a real <code>memmove</code>.</li>
+<li><strong><code>std::list</code></strong> is a doubly-linked list: every element is a <em>separate</em>
+  heap allocation containing the value plus two pointers (prev/next).
+  Insertion/removal at a known position is O(1) with no shifting — but each
+  node lives at an arbitrary, unrelated heap address, so traversal jumps
+  around memory unpredictably, defeating the CPU cache almost entirely.
+  This is why <code>std::list</code> is usually <em>slower</em> in practice than <code>std::vector</code>
+  even for workloads that look like a textbook "insert in the middle" case.</li>
+<li><strong><code>std::map</code></strong> is a balanced binary search tree (red-black tree in
+  practice), giving guaranteed O(log n) lookup by walking down the tree
+  comparing keys — each step is another pointer-chasing heap access, again
+  cache-unfriendly compared to a flat array, but the ordering (<code>begin()</code> to
+  <code>end()</code> yields sorted keys) falls directly out of the tree structure.</li>
+<li><strong><code>std::unordered_map</code></strong> is a hash table: an array of "buckets," where a
+  key's hash value modulo the bucket count picks which bucket to search
+  (each bucket is typically a small linked list for collision handling).
+  This gives average O(1) lookup, but a bad hash function or a resize
+  (rehashing every element into a larger bucket array) can degrade that or
+  cost an O(n) pass — which is why iteration order over an <code>unordered_map</code>
+  is unspecified and can change after any insertion that triggers a resize.</li>
+</ul>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Write a word-frequency counter. Read all whitespace-separated words from a
 <code>std::string</code> of text (use a <code>std::istringstream</code>), lowercase each one, and

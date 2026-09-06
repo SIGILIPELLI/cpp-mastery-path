@@ -1171,6 +1171,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2305,6 +2316,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2669,6 +2691,34 @@ than replace behaviour.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>A base class with <code>virtual</code> functions gains a hidden member: the <strong>vptr</strong>
+(virtual table pointer), typically the first 8 bytes of every object of that
+type. It points at a <strong>vtable</strong> — one per <em>class</em>, not per object, generated
+once by the compiler — an array of function-pointer slots, one per virtual
+function. When a derived class overrides a function, its vtable has that
+slot pointing at the derived implementation instead of the base one; slots
+it doesn't override still point at the inherited base implementation.</p>
+<p>Calling <code>shape-&gt;area()</code> on a <code>Shape*</code> that actually points at a <code>Circle</code>
+compiles into: load the vptr from the object, index into the vtable at the
+fixed slot assigned to <code>area</code>, and call whatever address is there — an
+extra memory load and an indirect call compared to a plain function call,
+which is the real (small but nonzero) cost of virtual dispatch. Crucially,
+<em>which</em> object the vptr points at determines <em>which</em> vtable is consulted, at
+runtime — that's the entire mechanism behind polymorphism: the pointer's
+static type (<code>Shape*</code>) only matters for what the compiler will <em>allow</em> you
+to call; the vptr installed by whichever constructor actually ran
+(<code>Circle</code>'s) determines what runs.</p>
+<p>This is also why constructors can't dispatch virtually: while <code>Shape</code>'s
+constructor is running, the object's vptr still points at <code>Shape</code>'s vtable
+(the derived constructor hasn't run yet to install <code>Circle</code>'s), so calling a
+virtual function from a base constructor invokes the <em>base</em> version even if
+the concrete object is a <code>Circle</code>. A base class destructor that isn't marked
+<code>virtual</code> is a real bug for the same reason in reverse: <code>delete basePtr;</code>
+without a virtual destructor looks up no vtable at all — it calls the
+destructor whose address was hardcoded at compile time from the <em>static</em>
+type, skipping the derived class's cleanup and leaking any resources it
+owned.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Build a small shape hierarchy. Define an abstract class <code>Shape</code> with pure
 virtual <code>double area() const</code>, <code>double perimeter() const</code>, and

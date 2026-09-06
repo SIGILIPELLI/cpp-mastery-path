@@ -1665,6 +1665,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2261,6 +2272,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2509,6 +2531,32 @@ multi-byte fields, even when testing locally makes it look unnecessary.</p>
 must eventually reach a matching <code>close()</code> on every code path, including
 error returns — exactly the RAII problem from Module 4, and exactly why the
 <code>Socket</code> wrapper above exists.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>A <strong>socket</strong> is a handle the OS kernel gives your process — mechanically
+the same kind of file-descriptor abstraction as an open file (Level 2's
+file I/O module), which is why socket I/O uses the same <code>read</code>/<code>write</code>-style
+syscalls under the hood. Creating a TCP socket and calling <code>connect()</code>
+triggers the kernel's networking stack to perform an actual <strong>three-way
+handshake</strong> (SYN, SYN-ACK, ACK) at the TCP protocol level before your
+<code>connect()</code> call returns successfully — this is why establishing a
+connection has real, measurable latency (at minimum one round trip to the
+remote host) even before a single byte of your application data is sent.</p>
+<p>TCP presents itself to your program as a reliable, ordered <strong>byte stream</strong>,
+not discrete messages — this is a real architectural fact, not just an API
+quirk: the kernel is free to buffer, coalesce, or split your <code>send()</code> calls
+into however many underlying IP packets it wants, and a <code>recv()</code> on the
+other end can return fewer bytes than were sent in one call, or bytes from
+multiple <code>send()</code> calls concatenated together. This is exactly why
+application protocols built on TCP need their own framing (a length prefix,
+a delimiter) — the transport layer guarantees byte order and delivery, but
+has no concept of "where one message ends and the next begins."</p>
+<p>Blocking socket calls (<code>recv()</code> with no data available) put the calling
+thread to sleep at the kernel level, identical in mechanism to a mutex
+<code>lock()</code> waiting on a contended lock (Module 3) — the kernel removes the
+thread from the CPU run queue and wakes it via an interrupt once data
+arrives on the socket's receive buffer, which is why a naive blocking
+server can only handle one connection per thread without either spawning a
+thread per client or using non-blocking/async I/O.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Turn the <code>Socket</code> class above into a complete RAII wrapper with <code>bind()</code>,
 <code>listen()</code>, <code>accept()</code> (returning another <code>Socket</code>), <code>connect()</code>, <code>send()</code>,

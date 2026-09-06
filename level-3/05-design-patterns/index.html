@@ -1637,6 +1637,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2261,6 +2272,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2502,6 +2524,38 @@ back to the subject</strong> is a reference cycle — neither side's reference c
 ever reaches zero, and both leak. If a back-reference is needed, make it a
 <code>weak_ptr</code>, exactly as with the cycles discussed in
 <a href="../../level-2/06-smart-pointers/">Level 2's smart pointers module</a>.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>The C++-idiomatic versions of these patterns differ from the textbook forms
+specifically because C++ has RAII and value semantics that other languages
+lack, and the mechanism-level reasons matter:</p>
+<ul>
+<li>A <strong>Factory</strong> returning <code>std::unique_ptr&lt;Base&gt;</code> relies on exactly the
+  same polymorphic-through-pointer mechanism as Level 2's library project —
+  the factory function's return type is <code>Base*</code>-shaped (wrapped for safety),
+  but the vptr installed by whichever concrete constructor actually ran
+  determines real behavior at every call site, with ownership transferred to
+  the caller via a move (no reference counting needed, unlike factories in
+  garbage-collected languages that hand out shared references implicitly).</li>
+<li><strong>Singleton</strong> implemented as a function-local <code>static</code> object relies on a
+  specific, standard-guaranteed mechanism: the first call to the function
+  triggers construction, and the compiler inserts a hidden
+  <strong>thread-safe initialization check</strong> (a guard variable, checked with an
+  atomic operation) around that first-time construction — this is mandated
+  by the standard since C++11 specifically so concurrent first calls from
+  multiple threads don't race and construct the object twice.</li>
+<li><strong>Observer</strong> implemented with <code>std::function</code> callbacks stores type-erased
+  closures — <code>std::function</code> internally holds either a small inline buffer
+  (small-object optimization, mirroring <code>std::string</code>'s SSO) or a
+  heap-allocated wrapper around whatever callable was assigned, plus a
+  vtable-like set of function pointers for "call this," "copy this,"
+  "destroy this" — which is how one <code>std::function&lt;void(int)&gt;</code> member can
+  hold a lambda, a function pointer, or a bound member function
+  interchangeably at the cost of one indirect call per invocation.</li>
+<li><strong>RAII-based Strategy/Decorator</strong> compositions rely on the same
+  destructor-ordering guarantees from Module 4 to guarantee wrapped
+  behaviors unwind in the right order even under exceptions, something the
+  Java/C# versions of these patterns don't get for free.</li>
+</ul>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Extend the shape factory with a <code>Triangle</code> (base and height) and register it
 in <code>makeShape</code>. Then give <code>Shape</code> a pure virtual <code>describe()</code> that returns a

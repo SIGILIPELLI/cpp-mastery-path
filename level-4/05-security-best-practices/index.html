@@ -2079,6 +2079,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2386,6 +2397,17 @@
     <span class="md-ellipsis">
       
         Traps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
       
     </span>
   </a>
@@ -2716,6 +2738,40 @@ from <a href="../../level-3/04-raii-deep-dive/">Level 3 Module 4</a> is what mak
 unwinding automatic.</p>
 <p><strong><code>std::random_device</code> is not guaranteed random.</strong> The standard permits a
 deterministic implementation. Do not use it for keys.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>A <strong>buffer overflow</strong> is a direct consequence of the flat, unchecked memory
+model from Level 1: writing past the end of a stack array doesn't hit a
+guard rail, it overwrites whatever the compiler placed adjacent to that
+array in the stack frame — often other local variables, and, in the classic
+case, the saved return address pushed when the current function was called
+(Level 1 Module 4). Overwrite that return address with an attacker-chosen
+value and, when the function returns, the CPU jumps to that address instead
+of the legitimate caller — the mechanical basis of stack-smashing exploits.
+Compiler mitigations work at exactly this level: <strong>stack canaries</strong> place a
+known, randomized value between locals and the return address and check it
+before returning (a modified canary means an overflow happened, so the
+program aborts rather than jumping into attacker-controlled memory);
+<strong>ASLR</strong> (Address Space Layout Randomization) randomizes where the stack,
+heap, and libraries are loaded each run, so a hardcoded jump target from a
+previous exploit attempt is very unlikely to land anywhere useful.</p>
+<p><strong>Use-after-free</strong> exploits the fact that <code>delete</code>/<code>free</code> doesn't erase
+memory or unmap it — it just marks the block as available to the allocator
+again. A dangling pointer that gets dereferenced after <code>delete</code> reads/writes
+memory that may still hold the old object's bytes (works "by luck") or may
+already have been handed out to a <em>different</em>, unrelated <code>new</code> call — at
+which point writing through the dangling pointer corrupts that other
+object's state, a bug whose symptom shows up somewhere completely unrelated
+to the actual defect. AddressSanitizer (ASan) catches this by instrumenting
+every allocation with "poisoned" guard regions and quarantining freed
+blocks instead of returning them to the allocator immediately, so a
+use-after-free hits still-poisoned memory and traps immediately at the
+faulting instruction rather than silently corrupting something else.</p>
+<p>Smart pointers (Level 2 Module 6) and bounds-checked containers close off
+these categories at the type-system level rather than relying on
+discipline: a <code>unique_ptr</code> cannot be double-freed because ownership is
+enforced by the deleted copy constructor, and <code>std::vector::at()</code> performs
+an explicit bounds check and throws rather than reading past the allocation
+the way <code>operator[]</code> (and raw array indexing) does with no check at all.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Take a deliberately vulnerable parser and harden it, measuring the difference at
 every step.</p>

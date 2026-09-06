@@ -1771,6 +1771,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2305,6 +2316,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2589,6 +2611,37 @@ times. Use <code>steady_clock</code>.</p>
 elements, a linear scan over a contiguous <code>std::vector</code> usually beats a
 <code>std::unordered_map</code> lookup — the vector fits in cache and the hash does not.
 The crossover is real and only measurement locates it.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>A <strong>sampling profiler</strong> (like <code>perf</code> on Linux or Instruments on macOS) works
+by having the OS interrupt your running program at a fixed frequency (say,
+1000 times/second) and record the current instruction pointer and call stack
+at each interrupt — over thousands of samples, the functions where the
+program spends the most wall-clock time simply show up most often in the
+samples, with no per-instruction instrumentation overhead. This is why
+sampling profilers can profile optimized release builds with near-zero
+distortion, while instrumentation-based profiling (inserting timing code at
+every function entry/exit) can be accurate down to the call but measurably
+slows the program and can even change which branch a CPU predicts.</p>
+<p>Most real-world C++ performance problems trace back to one of two hardware
+realities the language exposes rather than hides: <strong>cache misses</strong> and
+<strong>unnecessary allocation/copies</strong>. A cache miss (needing data that isn't in
+the CPU's L1/L2/L3 cache) costs on the order of 100-300 CPU cycles to fetch
+from main RAM, versus roughly 4 cycles for an L1 hit — which is the actual
+quantitative reason <code>std::vector</code>'s contiguous layout (Level 2 Module 3)
+consistently outperforms <code>std::list</code>'s scattered nodes even when both are
+"O(1)" for a given operation on paper. A heap allocation (<code>new</code>/<code>malloc</code>)
+isn't just "slow" abstractly — it typically involves the allocator searching
+a free-list or arena for a suitably-sized block, potentially requesting more
+memory from the OS via a syscall, work that dwarfs a few arithmetic
+instructions; this is why profiling often reveals that eliminating a hidden
+copy (passing a large object by value instead of by <code>const&amp;</code>, or triggering
+an implicit temporary) fixes more than any algorithmic tweak.</p>
+<p>Compiler optimization flags (<code>-O2</code>/<code>-O3</code>) change actual generated
+instructions — inlining small functions to remove call overhead, unrolling
+loops (Level 1 Module 3), and reordering/eliminating dead computations —
+which is why profiling debug builds (<code>-O0</code>, no optimization, extra
+bookkeeping for debugger support) gives numbers that don't reflect what
+ships to users at all.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Take the <code>joinSlow</code>/<code>joinFast</code> pair and extend the comparison. Add a third
 implementation, <code>joinStream</code>, that uses <code>std::ostringstream</code> and returns

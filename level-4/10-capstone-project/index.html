@@ -2206,6 +2206,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stretch-goals" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2373,6 +2384,17 @@
     <span class="md-ellipsis">
       
         Continuous integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
       
     </span>
   </a>
@@ -2939,6 +2961,34 @@ very little; passing twenty times under ThreadSanitizer is what justifies the
 claim in the class's name. If you change <code>get()</code> to take a <code>shared_lock</code> —
 which looks correct and passes every functional test — this is the job that
 turns red.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p><code>kvcache</code>'s LRU eviction is a textbook case of choosing a data structure
+for its <em>mechanism</em>, not just its Big-O: an LRU cache needs O(1) lookup by
+key and O(1) "move this entry to most-recently-used" on every access, which
+a single container can't give you alone. Pairing a <code>std::list</code> (Level 2
+Module 3's doubly-linked list — O(1) insert/erase/splice at any position
+given an iterator, with no shifting) with a <code>std::unordered_map&lt;Key,
+list::iterator&gt;</code> gets both: the hash map gives O(1) lookup straight to the
+node's position in the list, and <code>list::splice</code>/<code>erase</code>+<code>push_front</code> moves
+that node to the front in O(1) <em>without invalidating any other node's
+iterator</em> — a guarantee <code>std::vector</code> couldn't offer, since reallocation
+or shifting there would invalidate exactly the iterators stored in the map.
+Eviction is then just popping the list's tail node and erasing its key from
+the map — both O(1).</p>
+<p>The server's socket loop is where Level 3's networking and concurrency
+modules combine directly: each accepted client connection is handed to a
+worker (thread-per-connection or dispatched into the thread pool from
+Level 3's capstone), and every access to the shared LRU cache from multiple
+client-handling threads must go through the same mutex-guarded critical
+section discussed in Module 2 — the cache's internal <code>list</code>/<code>unordered_map</code>
+have no thread-safety of their own, so a lock around every public cache
+operation is what prevents two clients' concurrent <code>SET</code> calls from
+corrupting the linked list's internal pointers mid-splice.</p>
+<p>TTL expiry piggybacks on the same eviction mechanism rather than needing a
+separate background sweep: each entry stores an expiration timestamp, and a
+lookup checks it before returning a hit, lazily evicting an expired entry
+the moment something tries to read it — trading a small per-read timestamp
+comparison for avoiding a second thread or timer mechanism entirely.</p>
 <h2 id="stretch-goals">Stretch goals<a class="headerlink" href="#stretch-goals" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Replace thread-per-connection with the thread pool</strong> from

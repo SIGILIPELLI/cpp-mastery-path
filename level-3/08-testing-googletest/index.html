@@ -1765,6 +1765,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2349,6 +2360,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2640,6 +2662,34 @@ assertions in the test body, or use <code>EXPECT_*</code> in helpers.</p>
 bite.</strong> The per-test fixture reconstruction protects fixture members, not
 globals or <code>static</code> locals. Run with <code>--gtest_shuffle</code> occasionally to find
 tests that only pass in one particular order.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p><code>TEST(Suite, Name) { ... }</code> is a macro, and understanding what it expands
+into demystifies a lot of GoogleTest's behavior: it actually declares a new
+class derived from <code>::testing::Test</code> whose body becomes an overridden
+<code>TestBody()</code> method, and — critically — it also emits a <strong>static object</strong>
+of a registrar type whose constructor runs before <code>main()</code> even starts
+(static objects at namespace/global scope are constructed during program
+startup, before user code runs) and registers that test class with a global
+test registry. This is the entire mechanism behind "just write <code>TEST(...)</code>
+and it runs" — there's no reflection or scanning of your source; every test
+silently adds itself to a runtime list purely as a side effect of static
+initialization, and <code>RUN_ALL_TESTS()</code> just iterates that list, constructing
+a fresh instance of each test's class and calling its <code>TestBody()</code>.</p>
+<p><code>EXPECT_EQ</code> and <code>ASSERT_EQ</code> differ in exactly one mechanism: <code>ASSERT_*</code>
+macros expand to code that does an early <code>return</code> out of the current test
+function on failure, while <code>EXPECT_*</code> records the failure but lets
+execution continue — which is why <code>ASSERT_*</code> can't be used inside a
+non-<code>void</code>-returning helper function or on a background thread (a bare
+<code>return</code> from a <code>TestBody()</code>-called helper doesn't propagate the same way)
+and why a single test can report multiple <code>EXPECT_*</code> failures from one run
+but only ever stops at the first <code>ASSERT_*</code> failure.</p>
+<p>Fixtures (a class deriving from <code>::testing::Test</code> with <code>SetUp()</code>/<code>TearDown()</code>)
+exploit ordinary constructor/destructor semantics: GoogleTest constructs a
+<em>fresh</em> instance of the fixture class for every single <code>TEST_F</code>, so member
+variables initialized in <code>SetUp()</code> never leak state between tests — each
+test gets its own object with its own memory, torn down via the normal
+destructor mechanism (Module 4's RAII guarantees) before the next test's
+fixture is constructed.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Write a <code>Stack</code> class (fixed capacity, <code>push</code>, <code>pop</code>, <code>top</code>, <code>empty</code>,
 <code>size</code>; <code>pop</code>/<code>top</code> on an empty stack throws <code>std::out_of_range</code>, <code>push</code> on a

@@ -2085,6 +2085,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2342,6 +2353,17 @@
     <span class="md-ellipsis">
       
         Traps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
       
     </span>
   </a>
@@ -2717,6 +2739,35 @@ no-PCH configuration in CI.</p>
 <p><strong>Unity builds and ODR.</strong> Concatenating translation units merges their anonymous
 namespaces and <code>static</code> symbols; two files with a <code>static int counter;</code> now
 share one. Unity builds must be validated by a non-unity CI job.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>At scale, the build DAG from Level 2 Module 9 becomes the actual bottleneck,
+and the tools here attack it at the mechanism level. <strong>Ninja</strong> is deliberately
+"dumb" compared to Make on purpose: it takes a pre-computed, fully-expanded
+dependency graph (which CMake generates for it) and does the absolute
+minimum work to decide what's stale — no shell parsing, no recursive
+Makefile traversal — which is why generating Ninja files instead of
+Makefiles from the same <code>CMakeLists.txt</code> measurably speeds up incremental
+build startup on large projects, purely from lower per-invocation overhead.</p>
+<p><strong>Precompiled headers</strong> exploit the fact that recompiling a translation unit
+re-parses every header it includes from scratch every time (Level 1 Module
+1's preprocessor step is genuinely re-run per file) — a PCH has the compiler
+parse a common set of heavy headers once, serialize the resulting internal
+parsed representation to disk, and then <em>load</em> that binary snapshot for
+every subsequent translation unit that includes the same headers, skipping
+re-parsing entirely. <strong>Unity builds</strong> attack the same cost differently: by
+<code>#include</code>-ing many <code>.cpp</code> files into one translation unit compiled once,
+you pay the parsing/template-instantiation cost for shared headers a single
+time across what used to be dozens of separate compiler invocations — at
+the real cost of coarser incrementality, since touching one file now forces
+recompiling the whole merged unit.</p>
+<p><strong>ccache</strong> works by hashing a translation unit's <em>preprocessed</em> output
+(after macro expansion — Level 1's preprocessor stage again) plus the
+compiler flags, and if that exact hash was seen before, it hands back the
+previously-produced object file instead of invoking the compiler at all —
+which is why a <code>git checkout</code> back to a previous branch, or a CI cache
+restore, can turn a full rebuild into a near-instant one: nothing changed
+about the actual bytes fed to the compiler, so the cache key matches
+exactly, even though the source files changed identity on disk.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Convert the <a href="../../level-3/10-project-task-processor/">Level 3 task processor</a>
 into a properly packaged CMake project.</p>

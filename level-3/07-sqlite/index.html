@@ -1704,6 +1704,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2283,6 +2294,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2539,6 +2561,34 @@ type instead of finalizing by hand at every exit point.</p>
 <p><strong><code>sqlite3_column_text</code> returns a pointer valid only until the next
 <code>sqlite3_step</code> or <code>sqlite3_finalize</code> call on that statement.</strong> Copy it into a
 <code>std::string</code> immediately if it needs to outlive the current row.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>Linking against SQLite pulls in a <strong>C API</strong> — <code>sqlite3_open</code>,
+<code>sqlite3_prepare_v2</code>, <code>sqlite3_step</code>, etc. — with no exceptions, no RAII, and
+manual handle management (<code>sqlite3*</code>, <code>sqlite3_stmt*</code> are opaque pointers to
+structs SQLite's C code owns internally). Wrapping these handles in a small
+RAII class whose destructor calls <code>sqlite3_close</code>/<code>sqlite3_finalize</code> is the
+same pattern as a <code>unique_ptr</code> with a custom deleter (Level 2 Module 6): it's
+what makes a thrown C++ exception midway through a database operation still
+release the underlying SQLite resources correctly, something the raw C API
+gives you no help with on its own.</p>
+<p>A <strong>prepared statement</strong> (<code>sqlite3_prepare_v2</code>) matters at the mechanism
+level, not just for convenience: SQLite parses the SQL text and compiles it
+into its own internal bytecode <em>once</em>, producing a <code>sqlite3_stmt</code> you can
+then execute repeatedly (via <code>sqlite3_step</code>) with different bound parameter
+values — reusing this compiled form avoids re-parsing and re-planning the
+query on every call, and binding parameters (<code>sqlite3_bind_text</code>, etc.)
+instead of string-concatenating values into the SQL text is what actually
+prevents SQL injection: bound parameters are passed as raw values into
+SQLite's bytecode virtual machine, never re-interpreted as SQL syntax, so
+there is no text for an attacker's quote-and-semicolon payload to "escape
+into."</p>
+<p>SQLite's single-file design means the entire database — schema, indexes,
+data — lives in one file whose internal layout is a B-tree per table/index;
+a <code>SELECT</code> with a <code>WHERE</code> clause on an indexed column walks that B-tree
+(O(log n) page reads) instead of scanning every row, and each "page read" is
+a read of a fixed-size block (commonly 4096 bytes) directly from that file,
+which SQLite also caches in memory to avoid repeated disk I/O for
+frequently-accessed pages.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Wrap a prepared statement in an RAII class <code>Statement</code> (constructor calls
 <code>sqlite3_prepare_v2</code>, destructor calls <code>sqlite3_finalize</code>, move-only like the

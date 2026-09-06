@@ -812,6 +812,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2283,6 +2294,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2443,6 +2465,29 @@ result) matters once you use the operator inline, e.g. <code>arr[i++]</code>.</p
 <p><code>static_cast&lt;T&gt;(value)</code> is the safe, explicit way to convert between related
 types in C++ — prefer it over the old C-style <code>(int)price</code> cast, which is
 harder to search for and easier to misuse.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>Every fundamental type maps to a fixed number of bytes the compiler reserves
+either in a CPU register or on the stack — there's no hidden object header
+the way there is for, say, a Python <code>int</code>. On a typical 64-bit platform:
+<code>bool</code> is 1 byte, <code>int</code> is 4 bytes, <code>double</code> is 8 bytes, <code>char</code> is 1 byte.
+<code>sizeof(x)</code> asks the compiler for that number directly, computed entirely at
+compile time — it costs nothing at runtime.</p>
+<p>Declaring <code>int x = 5;</code> inside a function doesn't call any allocator: the
+compiler has already decided, while generating machine code for that
+function, how many bytes of stack space the function needs in total, and <code>x</code>
+is just a fixed offset into that reserved block (e.g. "4 bytes starting at
+<code>rbp - 12</code>" in x86-64 terms). Assigning to <code>x</code> is a single <code>mov</code> instruction.</p>
+<p>Type conversions are where the mechanism matters most. <code>int i = 3.9;</code> doesn't
+round — the compiler emits a truncating float-to-int conversion instruction,
+so the fractional part is discarded, giving <code>3</code>. Mixing <code>int</code> and <code>double</code> in
+an expression triggers <strong>implicit promotion</strong>: the <code>int</code> is widened to
+<code>double</code> <em>before</em> the operation, so <code>7 / 2</code> is integer division (<code>3</code>,
+remainder discarded at the machine level) while <code>7 / 2.0</code> promotes <code>7</code> to
+<code>7.0</code> first and does floating-point division. Integer overflow on signed
+types is undefined behavior — the bit pattern wraps according to two's
+complement in practice on virtually every real compiler, but the standard
+doesn't guarantee it, which is why sanitizers flag it even when the output
+"looks right."</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Write a program that declares a rectangle's <code>width</code> and <code>height</code> as <code>double</code>,
 computes and prints its area and perimeter, then declares an <code>int</code> number of

@@ -1631,6 +1631,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2305,6 +2316,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2562,6 +2584,32 @@ try to release the same resource in their destructors.</p>
 validating results.</strong> A destructor still shouldn't ignore an error signal
 silently; log it, or provide an explicit <code>close()</code>/<code>commit()</code> method that can
 report failure, with the destructor as the guaranteed fallback.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>RAII isn't a library feature — it's a direct consequence of one guarantee
+the C++ standard makes about object lifetime: a local (automatic-storage)
+object's destructor is called <strong>deterministically</strong>, at the exact point
+execution leaves its scope, whether by falling off the end of a block, an
+early <code>return</code>, a <code>break</code>/<code>continue</code>, or — critically — an exception
+unwinding past it (see Level 1's exception module). No garbage collector,
+no "eventually" — the compiler knows the object's scope at compile time and
+emits a direct destructor call at every point control can leave that scope,
+including duplicating that call across every early-exit path.</p>
+<p>For an object with multiple members, <strong>destruction order is the exact
+reverse of construction order</strong> — this is a hard guarantee, not an
+implementation detail, and it's what makes RAII compose safely: if a class
+holds a <code>std::lock_guard</code> constructed after a <code>std::ofstream</code>, the lock is
+released <em>before</em> the file stream's destructor runs and closes the file,
+matching the dependency direction you'd expect. The same reverse-order rule
+applies to a chain of nested scopes and to base/member subobjects within one
+object (members destroyed in reverse declaration order, then base classes
+destroyed after all members, mirroring construction which does bases first).</p>
+<p>This determinism is also <em>why</em> C++ doesn't need a <code>finally</code> block the way
+Java does: wrapping a resource in a small RAII type and simply letting it go
+out of scope achieves the same guaranteed cleanup, but works uniformly
+whether the scope ends normally or via an exception three functions up the
+call stack — the unwinding mechanism runs every intervening destructor
+regardless of how far it has to unwind, without any explicit cleanup code at
+each call site.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Write a <code>MutexUnlocker</code> RAII class that's the mirror image of <code>lock_guard</code>:
 it takes an <em>already-locked</em> <code>std::unique_lock&lt;std::mutex&gt;&amp;</code>, unlocks it in

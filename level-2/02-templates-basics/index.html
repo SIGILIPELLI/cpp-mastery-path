@@ -1210,6 +1210,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2327,6 +2338,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2621,6 +2643,32 @@ single most common beginner template error.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>A template is not a function — it's a <strong>blueprint the compiler uses to
+generate real functions</strong>, and no code exists for it until you actually use
+it with a concrete type. This process is called <strong>template instantiation</strong>:
+when the compiler sees <code>max(3, 5)</code> and <code>max(3.5, 2.1)</code> calling a template
+<code>max</code>, it silently generates two completely separate, fully-typed functions
+— <code>max&lt;int&gt;</code> and <code>max&lt;double&gt;</code> — each compiled as if you'd hand-written an
+overload for that exact type, with no runtime type parameter, no generics
+metadata, and no dispatch cost. This is why templates must live in headers
+in the common case: the compiler needs the full template definition visible
+at every call site to perform instantiation there, not just a declaration.</p>
+<p>Instantiating the same template with the same type twice across different
+translation units produces duplicate identical function bodies in each
+object file; the linker later recognizes them as identical (via a mechanism
+usually called COMDAT folding or "linkonce" sections) and discards all but
+one copy, so you don't end up with duplicate-symbol errors or bloated
+binaries in the normal case — but instantiating with <em>many</em> different types
+does genuinely generate that many separate function bodies, which is the
+real mechanism behind <strong>template bloat</strong>: a heavily templated codebase can
+produce noticeably larger binaries and longer compile times purely because
+each instantiation is compiled independently, in full.</p>
+<p>Type errors inside a template body are only checked <em>once you instantiate
+it</em> with a specific type — this is why template error messages can be long
+and confusing: the compiler is reporting a failure deep inside a
+function that only exists because you asked for <code>max&lt;MyWeirdType&gt;</code>, and it
+shows you the whole instantiation chain that got it there.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Write a class template <code>Pair&lt;A, B&gt;</code> that stores two values of possibly
 different types, with <code>first()</code> and <code>second()</code> accessors, a <code>swapped()</code> method

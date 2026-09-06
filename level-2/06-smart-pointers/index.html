@@ -1311,6 +1311,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2305,6 +2316,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2657,6 +2679,34 @@ right where it's created — which is what <code>make_unique</code>/<code>make_s
 </tr>
 </tbody>
 </table>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p><code>std::unique_ptr&lt;T&gt;</code> is, at runtime, nothing more than a raw <code>T*</code> wrapped in
+a class — it adds <strong>zero memory overhead</strong> in the common case (no custom
+deleter) and its destructor is simply <code>if (ptr) delete ptr;</code>. The entire
+safety guarantee comes from the <em>type system</em>, not from any runtime
+bookkeeping: the compiler deletes <code>unique_ptr</code>'s copy constructor and copy
+assignment operator, so <code>unique_ptr&lt;T&gt; b = a;</code> is a compile error, not a
+runtime check — there is no way to accidentally create two owners. Moving a
+<code>unique_ptr</code> (<code>std::move(a)</code>) copies the raw pointer into the destination
+and sets the source's internal pointer to <code>nullptr</code>, so exactly one
+<code>unique_ptr</code> ever holds the live address at a time, and destroying a
+moved-from <code>unique_ptr</code> is a no-op because its pointer is null.</p>
+<p><code>std::shared_ptr&lt;T&gt;</code> is heavier: alongside the raw pointer, it holds a
+pointer to a separately heap-allocated <strong>control block</strong> containing a
+strong-reference count and a weak-reference count. Copying a <code>shared_ptr</code>
+atomically increments the strong count (atomic because multiple threads may
+hold copies); destroying one atomically decrements it, and only when the
+count hits zero does the destructor actually call <code>delete</code> on the managed
+object. <code>make_shared&lt;T&gt;(...)</code> allocates the object and its control block in
+a <em>single</em> heap allocation (<code>new T(...)</code> plus a separate control block
+allocation would be two), which is both faster and more exception-safe.</p>
+<p><code>std::weak_ptr</code> holds a pointer to that same control block but doesn't
+increment the strong count — <code>lock()</code> checks the strong count before
+producing a <code>shared_ptr</code>, which is the mechanism that breaks <strong>reference
+cycles</strong>: two objects holding <code>shared_ptr</code>s to each other would keep each
+other's count above zero forever (a real memory leak, since neither count
+ever reaches 0), so one side holds a <code>weak_ptr</code> instead, which doesn't
+contribute to the count and lets the cycle actually be collected.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Model a small file system tree. A <code>Directory</code> owns a
 <code>std::vector&lt;std::shared_ptr&lt;Entry&gt;&gt;</code> of children, and every <code>Entry</code> holds a

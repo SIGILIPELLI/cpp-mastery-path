@@ -851,6 +851,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2305,6 +2316,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2456,6 +2478,30 @@ element, which matters for larger types like <code>std::string</code>.</p>
 <a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 <a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="c1">// 0 2 4 6 8</span>
 </code></pre></div>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>At the machine level there's no such thing as <code>if</code>, <code>for</code>, or <code>while</code> —
+every control-flow statement the compiler sees becomes <strong>comparison
+instructions plus conditional jumps</strong>. <code>if (x &gt; 0) { a(); } else { b(); }</code>
+lowers to roughly: compare <code>x</code> to <code>0</code>, jump to the <code>else</code> block's address if
+the comparison is false, otherwise fall through to <code>a()</code>'s code, then an
+unconditional jump past the <code>else</code> block. The CPU has no concept of nested
+braces — it only has a linear instruction stream and jumps that hop around
+in it.</p>
+<p>A <code>for (int i = 0; i &lt; n; i++)</code> loop desugars into the same
+initialize-check-jump-increment pattern as a <code>while</code> loop with a jump back to
+the top; the compiler treats them as the same construct. Modern compilers
+also try <strong>loop unrolling</strong> — duplicating the loop body several times to cut
+down on the number of conditional jumps executed, since a mispredicted
+branch (the CPU guessed wrong about whether a jump would be taken) stalls
+the pipeline for several cycles. This is why tight, predictable loops (like
+counting up to a fixed bound) are cheap, while loops with unpredictable
+branching inside them run measurably slower than the instruction count alone
+would suggest — the CPU's branch predictor cache learns patterns, and code
+that behaves consistently gets consistently correct guesses.</p>
+<p><code>switch</code> on an integral type compiles differently again: with enough
+contiguous cases, the compiler can emit a <strong>jump table</strong> — an array of
+addresses indexed directly by the switch value, letting it jump straight to
+the matching case in one lookup instead of a chain of comparisons.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Write a program that loops from 1 to 50 and, for each number: prints
 "FizzBuzz" if it's divisible by both 3 and 5, "Fizz" if only by 3, "Buzz" if

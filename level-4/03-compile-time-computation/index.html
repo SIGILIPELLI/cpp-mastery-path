@@ -1990,6 +1990,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2327,6 +2338,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2628,6 +2650,36 @@ template parameter — <code>static_assert(sizeof(T) == 0, "...")</code> — or 
 is a runtime-ish function whose value the compiler knows; putting it in
 <code>if constexpr</code> makes the condition trivially true and silently deletes your
 runtime path. Use a plain <code>if</code>.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p><code>constexpr</code> functions are compiled <em>twice</em>, conceptually: the compiler
+generates the normal runtime machine code for the function as usual, but
+when it encounters a call in a <strong>constant-evaluated context</strong> (initializing
+a <code>constexpr</code> variable, an array bound, a template argument), it instead
+runs the function using an internal, restricted interpreter built into the
+compiler itself — actually executing the loops, branches, and arithmetic at
+compile time, subject to rules that forbid anything non-deterministic
+(heap allocation before C++20, reading uninitialized memory, calling
+non-<code>constexpr</code> functions). If it can't satisfy those rules for the given
+arguments, the compiler falls back to leaving it as an ordinary runtime
+call — this dual nature is exactly what "usable at compile time <em>or</em>
+runtime" means mechanically, not two different functions.</p>
+<p><code>static_assert</code> performs its check using that same constant-evaluation
+engine but at a point in compilation before code generation even happens —
+a failing <code>static_assert</code> stops compilation outright with a message you
+control, which is why it's the standard way to validate template parameters
+(e.g. "T must be trivially copyable") entirely at build time, producing zero
+runtime code either way.</p>
+<p>Template metaprogramming (the older, C++03-era way of doing compile-time
+computation via recursive template instantiation — e.g. a <code>Factorial&lt;N&gt;</code>
+template that instantiates <code>Factorial&lt;N-1&gt;</code> recursively until a
+specialization for <code>Factorial&lt;0&gt;</code> stops it) achieves the same "compute at
+compile time" goal but through the instantiation mechanism from Level 3
+Module 1 rather than function execution: each recursive instantiation is a
+genuinely separate type/function the compiler generates, one per value of
+<code>N</code>, which is why deep template recursion can hit real compiler recursion
+limits and produce famously long error messages — <code>constexpr</code> functions
+replaced most of this because they let you write ordinary, debuggable,
+loop-based code instead of encoding arithmetic as type-level recursion.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Build a compile-time, collision-checked HTTP status table.</p>
 <ol>

@@ -952,6 +952,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2283,6 +2294,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2513,6 +2535,32 @@ state, behavior, and invariants to enforce (like <code>BankAccount</code> above)
 </tr>
 </tbody>
 </table>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>An object's memory layout is decided entirely at compile time: a class with
+members <code>int a; double b; std::string c;</code> becomes, in memory, those three
+members laid out back-to-back (with compiler-inserted <strong>padding</strong> so each
+member starts at an address matching its alignment requirement — a <code>double</code>
+typically needs to start at an 8-byte-aligned address, so the compiler may
+insert unused padding bytes after a smaller member to satisfy that). There
+is no per-object overhead beyond this — no hidden "class name" field, no
+reference count — unless the class has virtual functions, in which case a
+hidden <strong>vptr</strong> (pointer to a virtual function table) is added, usually as
+the first 8 bytes.</p>
+<p>A constructor is really just a function the compiler guarantees gets called
+automatically at the point of object creation, that initializes each member
+in the order the members are <em>declared</em> (not the order listed in the
+initializer list — a common source of subtle bugs when one member's
+initializer depends on another declared later). "Calling" a member function
+like <code>obj.method()</code> compiles down to an ordinary function call with one
+extra hidden argument: a pointer to <code>obj</code> itself, passed as <code>this</code>. There's
+no dispatch table lookup for a non-virtual method — the compiler resolves
+which function address to call at compile time, exactly like overload
+resolution, so calling a member function costs the same as calling a free
+function.</p>
+<p><code>struct</code> and <code>class</code> produce identical machine code — the <em>only</em> difference
+the compiler treats differently is the default access level (<code>public</code> for
+<code>struct</code>, <code>private</code> for <code>class</code>); everything about layout, constructors, and
+dispatch is otherwise the same keyword-for-keyword.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Write a <code>Book</code> class with private members <code>title</code>, <code>author</code>, and <code>pagesRead</code>
 (starting at 0), a constructor taking <code>title</code> and <code>author</code>, a method

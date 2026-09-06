@@ -2040,6 +2040,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2371,6 +2382,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2689,6 +2711,35 @@ operations.</p>
 <p><strong><code>alignas(64)</code> on a heap-allocated type needs C++17.</strong> Before C++17,
 <code>operator new</code> had no alignment-aware overload and over-aligned types were
 silently under-aligned on the heap. Check your standard level if you rely on it.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p><strong>Alignment</strong> is a hardware constraint the compiler enforces, not a
+stylistic preference: many CPU instructions that load a multi-byte value
+(a <code>double</code>, a SIMD register's worth of data) either require the address to
+be a multiple of the type's size/alignment or silently run slower when it
+isn't — this is why the compiler inserts padding bytes between struct
+members (Level 1 Module 7) rather than packing them tightly, and why
+reordering a struct's members by descending size can shrink its total
+footprint by eliminating that padding, a real, measurable effect on cache
+behavior since fewer bytes per object means more objects fit in one cache
+line.</p>
+<p>Placement <code>new</code> (<code>new (ptr) T(args)</code>) separates the two things ordinary
+<code>new</code> bundles together: allocating raw memory, and running a constructor
+<em>into</em> already-allocated memory at a specific address you control — this is
+the actual mechanism a custom allocator or an object pool uses to reuse a
+fixed memory buffer across many object lifetimes without calling the system
+allocator each time, and it's exactly what <code>std::optional</code> (Level 4 Module
+1) and <code>std::vector</code> (which allocates a raw buffer with <code>operator new</code> then
+placement-constructs each element into it) rely on internally.</p>
+<p><code>reinterpret_cast</code> and type punning touch the <strong>strict aliasing rule</strong>: the
+standard says the compiler is allowed to assume that pointers of unrelated
+types never refer to the same memory, and can optimize (reorder, cache
+values in registers) based on that assumption — which is why reinterpreting
+a <code>float*</code> as an <code>int*</code> and dereferencing it is technically undefined
+behavior even though it "works" on most compilers at <code>-O0</code>, and can produce
+silently wrong results once optimizations are enabled and the compiler
+exploits that same assumption. <code>memcpy</code>-ing bytes between types (or, since
+C++20, <code>std::bit_cast</code>) sidesteps this because it's defined purely in terms
+of byte copying, with no pointer-aliasing assumption involved.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Implement a fixed-size <strong>pool allocator</strong> for a single object type and prove it
 beats <code>new</code>/<code>delete</code>.</p>

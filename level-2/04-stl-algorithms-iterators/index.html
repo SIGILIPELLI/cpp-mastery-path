@@ -1266,6 +1266,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2327,6 +2338,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2712,6 +2734,36 @@ hand-written loop.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>An iterator is not one concrete type — it's a compile-time contract, and
+<code>std::sort</code>, <code>std::find</code>, etc. are <em>templates</em> that get instantiated
+separately for each container's actual iterator type, exactly like any other
+template (see Module 2). For <code>std::vector</code>, whose iterator is really just a
+raw pointer wrapper, <code>++it</code> compiles down to plain pointer increment and
+<code>*it</code> to a plain dereference — there is no virtual call, no indirection
+beyond what a raw loop would already do. This is why algorithms written
+against iterators have effectively <strong>zero overhead</strong> compared to hand-rolled
+loops once optimizations are on: the compiler inlines the whole algorithm
+body specialized for that exact iterator type and can reason about it the
+same way it would a raw pointer loop.</p>
+<p>Iterator <em>categories</em> reflect what operations the underlying memory layout
+actually supports: <code>std::vector</code>'s random-access iterators support <code>it + 5</code>
+directly (pointer arithmetic), while <code>std::list</code>'s bidirectional iterators
+only support one step at a time (<code>++</code>/<code>--</code>), because a linked list has no
+way to "jump ahead 5" without walking each node's <code>next</code> pointer in turn.
+<code>std::sort</code> requires random access specifically because efficient sorting
+algorithms (introsort, the typical STL implementation — quicksort with a
+heapsort fallback) need to jump to arbitrary positions like the middle
+element for pivot selection; that's why <code>std::sort</code> doesn't compile against
+<code>std::list</code> at all, and <code>std::list::sort</code> exists as a separate member
+function implementing a linked-list-appropriate algorithm (merge sort)
+instead.</p>
+<p>Iterator invalidation is a direct consequence of container internals:
+erasing from a <code>std::vector</code> shifts and potentially reallocates the backing
+array, invalidating every iterator from the erase point onward, while
+erasing from a <code>std::list</code> only frees that one node, leaving every other
+iterator (which points at a separate, untouched heap allocation) still
+valid.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Start with <code>std::vector&lt;std::string&gt; words</code> holding a couple of dozen words,
 some repeated and in mixed case.</p>

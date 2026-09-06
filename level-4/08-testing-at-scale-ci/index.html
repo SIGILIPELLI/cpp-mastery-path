@@ -2152,6 +2152,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2364,6 +2375,17 @@
     <span class="md-ellipsis">
       
         Traps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
       
     </span>
   </a>
@@ -2768,6 +2790,35 @@ with <code>RESOURCE_LOCK</code>.</p>
 <p><strong>Sanitizer jobs that don't actually run the tests.</strong> Building with
 <code>-fsanitize=address</code> finds nothing on its own — ASan is a <em>runtime</em> tool. The
 CI step that matters is <code>ctest</code>, not <code>cmake --build</code>.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>Running "thousands of tests fast" is really a scheduling problem over the
+same build DAG concepts from Module 6: <strong>test sharding</strong> splits the full
+GoogleTest binary's registered tests (recall Level 3 Module 8's static-
+registration mechanism — every <code>TEST()</code> adds itself to a global list at
+program startup) across multiple parallel worker processes using
+GoogleTest's own <code>--gtest_filter</code>/sharding environment variables, so a CI
+matrix runs N independent processes each executing a disjoint subset of the
+same static registry, bounded by wall-clock time rather than test count.</p>
+<p><strong>Flaky test detection</strong> usually works by literally re-running a failing
+test in isolation several times and checking whether the failure reproduces
+consistently — a test that fails once but passes on rerun typically has a
+genuine mechanism behind it even though the <em>symptom</em> looks random: an
+uninitialized variable (Level 1 Module 2, undefined behavior means the read
+value can differ run to run depending on whatever garbage bits happen to be
+in that stack slot), a data race (Level 3 Module 3, whose outcome depends on
+precise thread scheduling that varies between runs), or a static object
+initialization-order dependency across translation units (the standard only
+guarantees order <em>within</em> one file, not across files, so which global
+gets constructed first is link-order-dependent and can silently change).</p>
+<p>Fuzzing (libFuzzer, AFL) works by instrumenting the binary at compile time
+to track which code paths ("edges" in the control-flow graph — the jumps
+from Level 1 Module 3) each input exercises, then using that coverage
+feedback to mutate inputs toward ones that reach <em>new</em> code paths, rather
+than generating random inputs blindly — this is why fuzzing reliably finds
+buffer overflows and integer-overflow crashes (Module 5's territory) that
+example-based unit tests miss: it's systematically searching the space of
+inputs for ones that hit a code path nobody wrote a test for, guided by
+actual coverage data rather than developer intuition about what to test.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Build a fully instrumented test pipeline for a small <code>RateLimiter</code> class —
 <code>bool allow(const std::string&amp; user)</code>, token-bucket, capacity <em>N</em>, refilling <em>R</em>

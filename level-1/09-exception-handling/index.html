@@ -1019,6 +1019,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2305,6 +2316,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2475,6 +2497,32 @@ destructors run automatically when a scope ends, whether it ended normally or
 via an exception. You'll cover this pattern properly in Level 3, but it's
 worth knowing the name now: it's <em>the</em> idiomatic C++ answer to "make sure
 this cleanup always happens."</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>Unlike a return value, an exception doesn't travel through the normal
+function-return path at all. Most modern compilers implement exceptions
+using <strong>zero-cost (table-based) unwinding</strong>: as long as no <code>throw</code> happens,
+a <code>try</code> block costs <em>nothing</em> extra at runtime — no per-call overhead the
+way error-code checking has. Instead, the compiler emits a separate table
+alongside the code that maps instruction addresses to "what destructors need
+running and where to jump if an exception passes through here." When
+<code>throw expr;</code> executes, the runtime allocates the exception object, then
+walks the <strong>call stack</strong> frame by frame using that table, looking for a
+<code>catch</code> whose type matches. For every frame it unwinds past, it calls the
+destructors of every local object that was fully constructed in that frame —
+this is the mechanism that makes RAII (Resource Acquisition Is
+Initialization) work safely with exceptions: a file handle or mutex wrapped
+in a destructor-owning object gets released automatically during unwinding,
+even though execution never reaches the code after the <code>throw</code>.</p>
+<p>If unwinding reaches the top of the stack with no matching <code>catch</code>,
+<code>std::terminate</code> is called, which by default calls <code>abort()</code> — this is why
+an uncaught exception crashes the whole program rather than just "erroring
+out" gracefully. Because unwinding must run destructors correctly, throwing
+<em>from inside a destructor</em> while another exception is already unwinding is
+explicitly dangerous — it triggers <code>std::terminate</code> immediately, since the
+runtime can't unwind two exceptions on the same stack at once.</p>
+<p>Catching <code>const std::exception&amp;</code> rather than by value avoids <strong>object
+slicing</strong>: catching by value would copy only the base-class portion of a
+derived exception object, losing any derived-specific data and dispatch.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Write a function <code>int safeDivide(int a, int b)</code> that returns <code>a / b</code>, but
 throws <code>std::invalid_argument</code> with the message <code>"Cannot divide by zero"</code> if

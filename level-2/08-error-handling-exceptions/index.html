@@ -1378,6 +1378,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2327,6 +2338,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2709,6 +2731,36 @@ object). <strong>Return a value</strong> when failure is a normal outcome the ca
 routinely handle. Constructors are the strongest case for throwing — they have
 no return value, so an exception is the only way to refuse to create an invalid
 object.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>A custom exception type that derives from <code>std::exception</code> and stores extra
+data (an error code, a filename) is, in memory, laid out exactly like any
+other class from Module 1: a base <code>std::exception</code> subobject followed by
+your derived members. <code>throw MyError("...")</code> heap-allocates that object
+(implementations typically use a small dedicated exception-handling
+allocation, separate from the general heap, precisely so throwing doesn't
+fail even under memory pressure) and hands the unwinding mechanism a pointer
+to it along with its static type, which is how <code>catch (const MyError&amp;)</code>
+versus <code>catch (const std::exception&amp;)</code> can match a thrown object against
+different levels of its inheritance hierarchy — the runtime performs an
+<code>is-a</code> check up the exception's actual (dynamic) type chain, most-derived
+match first if you order your <code>catch</code> clauses correctly (base-class catches
+must come <em>after</em> derived-class catches, or the derived catch becomes
+unreachable dead code the compiler should warn about).</p>
+<p>The <strong>strong exception guarantee</strong> ("if this function throws, the object is
+left exactly as it was before the call") is implemented by convention, not
+by the language: a method that needs to change multiple pieces of state
+typically builds the <em>entire new state</em> in temporaries first, and only
+performs the final non-throwing pointer swap or move once everything has
+succeeded — so if an exception is thrown partway through, the object's real
+members were never touched. This is the same underlying idea as
+copy-and-swap for assignment operators.</p>
+<p><code>noexcept</code> isn't just documentation — it changes generated code. A function
+marked <code>noexcept</code> that throws anyway calls <code>std::terminate</code> directly instead
+of unwinding, and the compiler can skip generating unwinding tables for
+<code>noexcept</code> functions in some cases, and — critically for move semantics —
+<code>std::vector</code> will only use a type's move constructor during reallocation
+if it's marked <code>noexcept</code>; otherwise it falls back to copying, to preserve
+the strong exception guarantee during growth.</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Build an exception hierarchy for a configuration loader.</p>
 <ol>

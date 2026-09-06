@@ -1434,6 +1434,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stretch-goals" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2327,6 +2338,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stretch-goals" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2678,6 +2700,30 @@ fields and overridden <code>describe()</code> would be gone. Storing
 a pointer to whatever was actually constructed, <code>describe()</code> still dispatches
 virtually, and the destructor still runs the derived class's cleanup. This is
 the standard way to put polymorphic objects in an STL container.</p>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>Storing <code>std::vector&lt;std::unique_ptr&lt;Book&gt;&gt;</code> rather than
+<code>std::vector&lt;Book&gt;</code> avoids <strong>object slicing</strong>: if <code>EBook</code> derives from
+<code>Book</code> and you stored <code>Book</code> by value, assigning an <code>EBook</code> into a
+<code>Book</code>-typed vector slot would copy only the <code>Book</code> base subobject — the
+<code>EBook</code>-specific members and its vtable-based identity as an <code>EBook</code> would
+be lost, because a <code>std::vector&lt;Book&gt;</code> allocates exactly <code>sizeof(Book)</code>
+bytes per element regardless of what derived type constructed it. Wrapping
+each book in <code>unique_ptr&lt;Book&gt;</code> instead stores a fixed-size pointer per
+slot, so the vector itself never needs to know how large any individual
+<code>Book</code>-derived object actually is — polymorphism only works reliably through
+a pointer or reference specifically because dispatch depends on a vptr
+installed in the <em>original</em>, unsliced, heap-allocated object.</p>
+<p>When the vector reallocates during growth (as covered in Module 3), it
+moves each <code>unique_ptr</code> rather than the underlying <code>Book</code>/<code>EBook</code> object —
+moving a <code>unique_ptr</code> is just copying an 8-byte pointer and nulling the
+source, so growing the collection never touches, copies, or re-dispatches
+through the actual book objects at all, no matter how large or how deep
+their inheritance hierarchy.</p>
+<p>Calling a virtual method like <code>book-&gt;describe()</code> through the stored
+<code>unique_ptr&lt;Book&gt;</code> goes through the same vtable indirection as Module 1: the
+pointer's static type is <code>Book*</code>, but the vptr embedded in whatever concrete
+object (<code>Book</code> or <code>EBook</code>) was actually constructed on the heap decides which
+<code>describe()</code> body actually executes.</p>
 <h2 id="stretch-goals">Stretch goals<a class="headerlink" href="#stretch-goals" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Add a <code>removeBook(isbn)</code> that erases the entry from the <code>unordered_map</code> —

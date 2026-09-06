@@ -1406,6 +1406,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2327,6 +2338,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-it-actually-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Actually Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#exercise" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2761,6 +2783,31 @@ each component's build rules next to its code.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="how-it-actually-works">How It Actually Works<a class="headerlink" href="#how-it-actually-works" title="Permanent link">&para;</a></h2>
+<p>CMake is not a compiler — it's a <strong>build-system generator</strong>. Running
+<code>cmake</code> reads <code>CMakeLists.txt</code> and produces native build files (a
+<code>Makefile</code>, a Ninja build graph, an Xcode/Visual Studio project) tailored to
+your platform, and it's the second tool — <code>make</code>/<code>ninja</code> — that actually
+invokes the compiler and linker. This two-stage design is why the same
+<code>CMakeLists.txt</code> works across macOS, Linux, and Windows: CMake abstracts
+away the very different compiler flags and project formats each platform's
+native toolchain expects, generating the right low-level build instructions
+for whichever one it detects.</p>
+<p>The generated build graph tracks a real <strong>dependency DAG</strong> at the level of
+individual files: each <code>.cpp</code> gets a rule saying "rebuild this <code>.o</code> if this
+source file or any header it <code>#include</code>s (tracked via compiler-generated
+dependency files) has a newer modification time than the existing <code>.o</code>."
+That's the actual mechanism behind incremental builds — touching one <code>.cpp</code>
+file only triggers recompilation of that file and relinking, not a full
+rebuild, because <code>make</code>/<code>ninja</code> walks the DAG and skips any node whose
+inputs are all older than its output.</p>
+<p>Linking a library — <code>target_link_libraries</code> — instructs the linker to pull
+in a <code>.a</code> (static, whose object code is copied wholesale into your final
+executable at link time — no runtime dependency, larger binary) or <code>.so</code>/
+<code>.dylib</code> (dynamic/shared, where only a reference to the library is embedded
+and the OS's dynamic loader resolves and maps the actual library code into
+your process's address space at <em>program startup</em>, so multiple running
+programs can share one copy of the library in physical memory).</p>
 <h2 id="exercise">Exercise<a class="headerlink" href="#exercise" title="Permanent link">&para;</a></h2>
 <p>Convert the Bank Account CLI from
 <a href="../../level-1/10-project-bank-account-cli/">Level 1's project</a> to CMake.</p>
