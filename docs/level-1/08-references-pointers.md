@@ -1,5 +1,9 @@
 # 08 · References & Pointers
 
+## 🎥 Video walkthrough
+
+<iframe width="100%" height="400" style="max-width:720px;aspect-ratio:16/9;height:auto;" src="https://www.youtube.com/embed/eQVx3T0tlZg" title="Video walkthrough" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
 References and pointers both let you refer to an existing variable without
 copying it — but they work differently and are used in different situations.
 

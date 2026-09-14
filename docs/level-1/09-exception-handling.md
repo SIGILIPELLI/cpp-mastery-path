@@ -1,5 +1,9 @@
 # 09 · Exception Handling Basics
 
+## 🎥 Video walkthrough
+
+<iframe width="100%" height="400" style="max-width:720px;aspect-ratio:16/9;height:auto;" src="https://www.youtube.com/embed/xsi-6DIq9Zw" title="Video walkthrough" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
 Exceptions represent errors or unusual conditions detected at runtime. C++
 lets you handle them explicitly instead of crashing the whole program.
 
