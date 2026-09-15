@@ -1,3 +1,7 @@
+---
+description: "Project — Bank Account CLI — A small end-to-end project combining everything from Level 1: classes, arrays (std::vector), strings, references, and…"
+---
+
 # 10 · Project — Bank Account CLI
 
 A small end-to-end project combining everything from Level 1: classes, arrays
@@ -219,3 +223,9 @@ reaches the `catch` block.
   Account>` keyed by owner name for O(log n) lookups.
 
 Completing this project means you're ready for **Level 2 · Intermediate**.
+
+## 🔀 See this in another language
+
+- [C# — Project — Console Task Manager App](https://sigilipelli.github.io/csharp-mastery-path/level-1/10-project-task-manager/)
+- [Kotlin — Project — CLI To-Do App](https://sigilipelli.github.io/kotlin-mastery-path/level-1/10-project-todo-app/)
+- [Shell/Bash — Project — Backup Script](https://sigilipelli.github.io/shell-mastery-path/level-1/10-project-backup-script/)

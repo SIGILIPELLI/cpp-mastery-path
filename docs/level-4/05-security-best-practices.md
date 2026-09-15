@@ -1,3 +1,7 @@
+---
+description: "Security Best Practices — Memory-safety defects in C and C++ have been roughly 70% of the severe vulnerabilities reported by Microsoft, Google Chrome and…"
+---
+
 # 05 · Security Best Practices
 
 Memory-safety defects in C and C++ have been roughly **70% of the severe

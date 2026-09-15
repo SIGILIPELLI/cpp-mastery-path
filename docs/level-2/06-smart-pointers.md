@@ -1,3 +1,7 @@
+---
+description: "Smart Pointers — Level 1 Module 8 introduced raw pointers and new/delete. Manual memory management is where most C++ bugs come from: forget a delete and…"
+---
+
 # 06 · Smart Pointers
 
 [Level 1 Module 8](../level-1/08-references-pointers.md) introduced raw

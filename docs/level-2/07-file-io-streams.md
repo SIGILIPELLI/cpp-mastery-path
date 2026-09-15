@@ -1,3 +1,7 @@
+---
+description: "File I/O & Streams — You've been using std::cout and std::cin since Level 1. Those are just two particular streams. C++ models every character source and…"
+---
+
 # 07 · File I/O & Streams
 
 You've been using `std::cout` and `std::cin` since Level 1. Those are just two

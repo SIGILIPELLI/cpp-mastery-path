@@ -1,3 +1,7 @@
+---
+description: "Systems Programming Patterns — C++ is used where the machine shows through: kernels, databases, game engines, trading systems, embedded firmware. At that…"
+---
+
 # 04 · Systems Programming Patterns
 
 C++ is used where the machine shows through: kernels, databases, game engines,

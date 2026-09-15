@@ -1,3 +1,7 @@
+---
+description: "Testing with Google Test — Up to now, 'does it work?' has been answered by running the program and reading the output by eye. That stops scaling the…"
+---
+
 # 08 · Testing with Google Test
 
 Up to now, "does it work?" has been answered by running the program and

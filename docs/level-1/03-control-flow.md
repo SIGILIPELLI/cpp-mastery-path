@@ -1,3 +1,7 @@
+---
+description: "Control Flow — Control flow statements decide which code runs, and how many times."
+---
+
 # 03 · Control Flow
 
 Control flow statements decide which code runs, and how many times.
@@ -175,6 +179,12 @@ that behaves consistently gets consistently correct guesses.
 contiguous cases, the compiler can emit a **jump table** — an array of
 addresses indexed directly by the switch value, letting it jump straight to
 the matching case in one lookup instead of a chain of comparisons.
+
+## 🔀 See this in another language
+
+- [C# — Control Flow](https://sigilipelli.github.io/csharp-mastery-path/level-1/03-control-flow/)
+- [Kotlin — Control Flow](https://sigilipelli.github.io/kotlin-mastery-path/level-1/03-control-flow/)
+- [Shell/Bash — Control Flow](https://sigilipelli.github.io/shell-mastery-path/level-1/03-control-flow/)
 
 ## Exercise
 

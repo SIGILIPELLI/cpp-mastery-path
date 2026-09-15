@@ -1,3 +1,7 @@
+---
+description: "Compile-time Computation — C++ has two execution environments. One is the CPU at runtime; the other is the compiler, which can run a surprisingly large…"
+---
+
 # 03 · Compile-time Computation
 
 C++ has two execution environments. One is the CPU at runtime; the other is the

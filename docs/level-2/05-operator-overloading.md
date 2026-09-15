@@ -1,3 +1,7 @@
+---
+description: "Operator Overloading — std::string supports +. std::vector supports []. std::cout supports <<. None of these are built-in language features for those…"
+---
+
 # 05 · Operator Overloading
 
 `std::string` supports `+`. `std::vector` supports `[]`. `std::cout` supports

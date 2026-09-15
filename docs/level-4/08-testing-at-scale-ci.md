@@ -1,3 +1,7 @@
+---
+description: "Testing at Scale & CI — Level 3 Module 8 covered writing a test. This module covers running thousands of them, on every commit, on every platform, fast…"
+---
+
 # 08 · Testing at Scale & CI
 
 [Level 3 Module 8](../level-3/08-testing-googletest.md) covered writing a test.

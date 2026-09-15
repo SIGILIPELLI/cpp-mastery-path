@@ -1,3 +1,7 @@
+---
+description: "Modern C++ Features (17/20) — C++17 and C++20 changed what idiomatic C++ looks like more than any release since C++11. Code that used to need an…"
+---
+
 # 01 · Modern C++ Features (17/20)
 
 C++17 and C++20 changed what idiomatic C++ looks like more than any release

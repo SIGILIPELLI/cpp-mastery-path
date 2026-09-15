@@ -1,3 +1,7 @@
+---
+description: "Strings (std::string) — #include is required to use std::string — alone does not pull it in."
+---
+
 # 06 · Strings (std::string)
 
 ## 🎥 Video walkthrough
@@ -173,6 +177,12 @@ write past the terminator (or forget it entirely) and every string function
 either walks off into unrelated memory or corrupts it. `std::string` sidesteps
 this by tracking its length explicitly as a member field, so `.size()` is an
 O(1) lookup, not a scan.
+
+## 🔀 See this in another language
+
+- [C# — Collections](https://sigilipelli.github.io/csharp-mastery-path/level-1/06-collections/)
+- [Kotlin — Null Safety Basics](https://sigilipelli.github.io/kotlin-mastery-path/level-1/06-null-safety/)
+- [Shell/Bash — Working with Files & Directories](https://sigilipelli.github.io/shell-mastery-path/level-1/06-files-directories/)
 
 ## Exercise
 

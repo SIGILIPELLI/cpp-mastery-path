@@ -1,3 +1,7 @@
+---
+description: "RAII Deep Dive — Smart pointers and std::lock_guard are both instances of one idiom: Resource Acquisition Is Initialization. Bind a resource's lifetime to…"
+---
+
 # 04 · RAII Deep Dive
 
 [Smart pointers](../level-2/06-smart-pointers.md) and

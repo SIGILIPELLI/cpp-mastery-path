@@ -1,3 +1,7 @@
+---
+description: "Project — Multi-threaded Task Processor — This project is the capstone of Level 3. You'll build a thread pool: a fixed set of worker threads that pull…"
+---
+
 # 10 · Project — Multi-threaded Task Processor
 
 This project is the capstone of Level 3. You'll build a **thread pool**: a

@@ -1,3 +1,7 @@
+---
+description: "OOP Deep Dive — Level 1 Module 7 covered a single class in isolation. Real programs need classes that relate to each other: a Circle and a Square that are…"
+---
+
 # 01 · OOP Deep Dive
 
 [Level 1 Module 7](../level-1/07-classes-objects.md) covered a single class in

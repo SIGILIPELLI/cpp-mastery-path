@@ -1,3 +1,7 @@
+---
+description: "Setup & First Program — Either g++ or clang++ works fine for everything in this course; examples use g++ but the commands are interchangeable."
+---
+
 # 01 · Setup & First Program
 
 ## 🎥 Video walkthrough
@@ -133,6 +137,12 @@ runtime interpreter: the executable you get is CPU instructions the OS loads
 directly, which is why C++ programs start instantly and why a binary built
 for macOS/ARM64 won't run on Linux/x86 — there's no portable bytecode layer
 like a JVM or CLR sits underneath.
+
+## 🔀 See this in another language
+
+- [C# — What Is C# & .NET?](https://sigilipelli.github.io/csharp-mastery-path/level-1/01-what-is-csharp-dotnet/)
+- [Kotlin — Setup & First Program](https://sigilipelli.github.io/kotlin-mastery-path/level-1/01-setup/)
+- [Shell/Bash — Setup & First Script](https://sigilipelli.github.io/shell-mastery-path/level-1/01-setup/)
 
 ## Exercise
 

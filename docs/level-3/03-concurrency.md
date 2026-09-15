@@ -1,3 +1,7 @@
+---
+description: "Concurrency — Every program so far has run one instruction at a time. std::thread lets a single process run multiple independent lines of execution at…"
+---
+
 # 03 · Concurrency
 
 Every program so far has run one instruction at a time. `std::thread` lets a

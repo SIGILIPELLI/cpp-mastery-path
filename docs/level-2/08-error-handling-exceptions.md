@@ -1,3 +1,7 @@
+---
+description: "Error Handling with Exceptions — This module covers custom exception classes, RAII-based cleanup, and the exception safety guarantees that library authors…"
+---
+
 # 08 · Error Handling with Exceptions
 
 [Level 1 Module 9](../level-1/09-exception-handling.md) covered `try`/`catch`

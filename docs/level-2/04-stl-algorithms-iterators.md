@@ -1,3 +1,7 @@
+---
+description: "STL Algorithms & Iterators — The containers in Module 3 store data. The algorithms in operate on it — sorting, searching, transforming, filtering — and…"
+---
+
 # 04 · STL Algorithms & Iterators
 
 The containers in [Module 3](03-stl-containers.md) store data. The algorithms

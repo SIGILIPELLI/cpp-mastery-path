@@ -1,3 +1,7 @@
+---
+description: "Arrays & std::vector Basics — C++ gives you two main ways to store a sequence of values: fixed-size C-style arrays, and the dynamically-sized std::vector."
+---
+
 # 05 · Arrays & std::vector Basics
 
 C++ gives you two main ways to store a sequence of values: fixed-size
@@ -162,6 +166,12 @@ inserting a lot of elements is faster when you `reserve()` capacity
 up-front: it eliminates the repeated reallocate-and-move cycles. And it's
 why a pointer or iterator into a vector can be silently invalidated by a
 `push_back` — the whole backing block may have moved to a new address.
+
+## 🔀 See this in another language
+
+- [C# — Classes & Objects](https://sigilipelli.github.io/csharp-mastery-path/level-1/05-classes-objects/)
+- [Kotlin — Classes & Objects Basics](https://sigilipelli.github.io/kotlin-mastery-path/level-1/05-classes-objects/)
+- [Shell/Bash — Functions & Arguments](https://sigilipelli.github.io/shell-mastery-path/level-1/05-functions-arguments/)
 
 ## Exercise
 

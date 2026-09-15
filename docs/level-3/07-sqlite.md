@@ -1,3 +1,7 @@
+---
+description: "Working with SQLite from C++ — SQLite is a full SQL database engine that lives in a single library and reads/writes a single file — no server process, no…"
+---
+
 # 07 · Working with SQLite from C++
 
 SQLite is a full SQL database engine that lives in a single library and

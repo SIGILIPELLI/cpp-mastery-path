@@ -1,3 +1,7 @@
+---
+description: "Advanced Templates — Level 2's templates module covered function and class templates: write the logic once, let the compiler stamp out a version for each…"
+---
+
 # 01 · Advanced Templates
 
 [Level 2's templates module](../level-2/02-templates-basics.md) covered

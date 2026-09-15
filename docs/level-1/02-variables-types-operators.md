@@ -1,3 +1,7 @@
+---
+description: "Variables, Types & Operators — C++ is statically typed: every variable has a fixed type, decided at compile time, that never changes."
+---
+
 # 02 · Variables, Types & Operators
 
 C++ is statically typed: every variable has a fixed type, decided at compile
@@ -148,6 +152,12 @@ types is undefined behavior — the bit pattern wraps according to two's
 complement in practice on virtually every real compiler, but the standard
 doesn't guarantee it, which is why sanitizers flag it even when the output
 "looks right."
+
+## 🔀 See this in another language
+
+- [C# — Variables & Types](https://sigilipelli.github.io/csharp-mastery-path/level-1/02-variables-types/)
+- [Kotlin — Variables & Types](https://sigilipelli.github.io/kotlin-mastery-path/level-1/02-variables-types/)
+- [Shell/Bash — Variables & Data Types](https://sigilipelli.github.io/shell-mastery-path/level-1/02-variables-data-types/)
 
 ## Exercise
 

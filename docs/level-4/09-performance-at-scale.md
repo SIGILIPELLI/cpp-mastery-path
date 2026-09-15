@@ -1,3 +1,7 @@
+---
+description: "Performance at Scale — Level 3 Module 9 covered how to measure. This module covers what the measurements usually turn out to be about."
+---
+
 # 09 · Performance at Scale
 
 [Level 3 Module 9](../level-3/09-performance-profiling.md) covered how to

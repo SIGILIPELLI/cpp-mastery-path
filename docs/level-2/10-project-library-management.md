@@ -1,3 +1,7 @@
+---
+description: "Project — Library Management System — This project pulls together everything from Level 2: OOP with inheritance, STL containers, smart pointers, operator…"
+---
+
 # 10 · Project — Library Management System
 
 This project pulls together everything from Level 2: OOP with inheritance,

@@ -1,3 +1,7 @@
+---
+description: "References & Pointers — Every variable lives at some address in memory; &x gives you that address rather than the value stored there."
+---
+
 # 08 · References & Pointers
 
 ## 🎥 Video walkthrough
@@ -172,6 +176,12 @@ different in mechanism from a dangling pointer.
 `nullptr` is a pointer value guaranteed to compare unequal to every valid
 object address; dereferencing it triggers a hardware-level fault on virtually
 every platform because address `0` is deliberately left unmapped by the OS.
+
+## 🔀 See this in another language
+
+- [C# — LINQ Basics](https://sigilipelli.github.io/csharp-mastery-path/level-1/08-linq-basics/)
+- [Kotlin — Data Classes](https://sigilipelli.github.io/kotlin-mastery-path/level-1/08-data-classes/)
+- [Shell/Bash — Basic Text Processing](https://sigilipelli.github.io/shell-mastery-path/level-1/08-text-processing/)
 
 ## Exercise
 

@@ -1,3 +1,7 @@
+---
+description: "Advanced Concurrency — Level 3 Module 3 covered threads, mutexes and condition variables — enough to build the thread pool. This module covers the layer…"
+---
+
 # 02 · Advanced Concurrency
 
 [Level 3 Module 3](../level-3/03-concurrency.md) covered threads, mutexes and

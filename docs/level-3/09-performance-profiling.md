@@ -1,3 +1,7 @@
+---
+description: "Performance Profiling — C++ is chosen for speed, and that makes it uniquely easy to waste. A program can be a hundred times slower than necessary while…"
+---
+
 # 09 · Performance Profiling
 
 C++ is chosen for speed, and that makes it uniquely easy to waste. A program

@@ -1,3 +1,7 @@
+---
+description: "Networking Basics — Everything up to this point has run inside one process. Networking is what lets two separate processes — potentially on different…"
+---
+
 # 06 · Networking Basics
 
 Everything up to this point has run inside one process. Networking is what

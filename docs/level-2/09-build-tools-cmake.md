@@ -1,3 +1,7 @@
+---
+description: "Build Tools (CMake Basics) — Every project so far has compiled with one g++ command. That stops scaling fast: as soon as you have a dozen source files, a…"
+---
+
 # 09 · Build Tools (CMake Basics)
 
 Every project so far has compiled with one `g++` command. That stops scaling

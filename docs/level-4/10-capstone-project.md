@@ -1,3 +1,7 @@
+---
+description: "Capstone Project — This is the last module of the path, and it is a real service rather than an exercise: kvcache, a networked, thread-safe, LRU key-value…"
+---
+
 # 10 · Capstone Project
 
 This is the last module of the path, and it is a real service rather than an

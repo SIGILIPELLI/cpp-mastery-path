@@ -1,3 +1,7 @@
+---
+description: "Templates Basics — Function overloading (Level 1 Module 4) lets you write max(int, int) and max(double, double) separately. That gets tedious fast, and it…"
+---
+
 # 02 · Templates Basics
 
 Function overloading ([Level 1 Module 4](../level-1/04-functions-overloading.md))

@@ -1,3 +1,7 @@
+---
+description: "Move Semantics & Rvalue References — Every constructor and assignment you've written so far has implicitly copied. Copying a std::vector with a million…"
+---
+
 # 02 · Move Semantics & Rvalue References
 
 Every constructor and assignment you've written so far has implicitly

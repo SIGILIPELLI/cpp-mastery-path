@@ -1,3 +1,7 @@
+---
+description: "Functions & Overloading — Functions package up reusable logic behind a name, parameters, and a return type."
+---
+
 # 04 · Functions & Overloading
 
 Functions package up reusable logic behind a name, parameters, and a return
@@ -178,6 +182,12 @@ Passing arguments **by value** copies bytes onto the callee's stack frame
 (cheap for an `int`, potentially expensive for a large `struct`); passing
 **by reference** just passes the address, so the callee operates on the
 caller's original memory with no copy at all.
+
+## 🔀 See this in another language
+
+- [C# — Methods & Functions](https://sigilipelli.github.io/csharp-mastery-path/level-1/04-methods-functions/)
+- [Kotlin — Functions](https://sigilipelli.github.io/kotlin-mastery-path/level-1/04-functions/)
+- [Shell/Bash — Loops](https://sigilipelli.github.io/shell-mastery-path/level-1/04-loops/)
 
 ## Exercise
 

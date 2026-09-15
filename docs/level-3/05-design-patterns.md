@@ -1,3 +1,7 @@
+---
+description: "Design Patterns in C++ — Design patterns are named solutions to recurring design problems — a shared vocabulary, not a library you import. What makes them…"
+---
+
 # 05 · Design Patterns in C++
 
 Design patterns are named solutions to recurring design problems — a shared

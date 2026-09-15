@@ -1,3 +1,7 @@
+---
+description: "Large-Scale Build Systems — Level 2 Module 9 introduced CMake as a way to stop typing g++ by hand. At scale the build system becomes something else: the…"
+---
+
 # 06 · Large-Scale Build Systems
 
 [Level 2 Module 9](../level-2/09-build-tools-cmake.md) introduced CMake as a way

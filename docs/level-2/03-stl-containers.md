@@ -1,3 +1,7 @@
+---
+description: "STL Containers — You already met std::vector in Level 1 Module 5. The Standard Library ships a whole family of containers, each with a different…"
+---
+
 # 03 · STL Containers
 
 You already met `std::vector` in [Level 1 Module 5](../level-1/05-arrays-vector-basics.md).

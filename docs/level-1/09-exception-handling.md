@@ -1,3 +1,7 @@
+---
+description: "Exception Handling Basics — Unlike some languages, C++ does not throw an exception on integer division by zero automatically — that's actually undefined…"
+---
+
 # 09 · Exception Handling Basics
 
 ## 🎥 Video walkthrough
@@ -179,6 +183,12 @@ runtime can't unwind two exceptions on the same stack at once.
 Catching `const std::exception&` rather than by value avoids **object
 slicing**: catching by value would copy only the base-class portion of a
 derived exception object, losing any derived-specific data and dispatch.
+
+## 🔀 See this in another language
+
+- [C# — File I/O & Working with Text](https://sigilipelli.github.io/csharp-mastery-path/level-1/09-file-io/)
+- [Kotlin — Extension Functions Intro](https://sigilipelli.github.io/kotlin-mastery-path/level-1/09-extension-functions/)
+- [Shell/Bash — Exit Codes & Basic Error Handling](https://sigilipelli.github.io/shell-mastery-path/level-1/09-exit-codes-error-handling/)
 
 ## Exercise
 

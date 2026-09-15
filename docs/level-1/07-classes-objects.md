@@ -1,3 +1,7 @@
+---
+description: "Classes & Objects Basics — this is a pointer to the current instance — this->name disambiguates a member from a parameter of the same name. The const…"
+---
+
 # 07 · Classes & Objects Basics
 
 ## 🎥 Video walkthrough
@@ -231,6 +235,12 @@ function.
 the compiler treats differently is the default access level (`public` for
 `struct`, `private` for `class`); everything about layout, constructors, and
 dispatch is otherwise the same keyword-for-keyword.
+
+## 🔀 See this in another language
+
+- [C# — Exception Handling](https://sigilipelli.github.io/csharp-mastery-path/level-1/07-exception-handling/)
+- [Kotlin — Collections](https://sigilipelli.github.io/kotlin-mastery-path/level-1/07-collections/)
+- [Shell/Bash — Pipes & Redirection](https://sigilipelli.github.io/shell-mastery-path/level-1/07-pipes-redirection/)
 
 ## Exercise
 
