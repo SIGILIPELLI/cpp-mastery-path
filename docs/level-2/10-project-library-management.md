@@ -394,3 +394,7 @@ object (`Book` or `EBook`) was actually constructed on the heap decides which
   persists across runs the way [Module 7](07-file-io-streams.md) covers.
 
 Completing this project means you're ready for **Level 3 · Advanced**.
+
+## 🔀 See this in another language
+
+- [Java — 10 · Project — Inventory Management System](https://sigilipelli.github.io/java-mastery-path/level-2/10-project-inventory-system/)

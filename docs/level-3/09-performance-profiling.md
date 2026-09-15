@@ -295,6 +295,12 @@ which is why profiling debug builds (`-O0`, no optimization, extra
 bookkeeping for debugger support) gives numbers that don't reflect what
 ships to users at all.
 
+## 🔀 See this in another language
+
+- [Python — 10 · Profiling & Performance](https://sigilipelli.github.io/python-mastery-path/level-3/10-profiling-performance/)
+- [Java — 10 · Performance Profiling & Optimization](https://sigilipelli.github.io/java-mastery-path/level-3/10-profiling-optimization/)
+- [Ruby — 06 · Performance & Profiling](https://sigilipelli.github.io/ruby-mastery-path/level-3/06-performance-profiling/)
+
 ## Exercise
 
 Take the `joinSlow`/`joinFast` pair and extend the comparison. Add a third

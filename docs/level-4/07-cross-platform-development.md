@@ -331,6 +331,10 @@ platforms where it wouldn't compile — a CI matrix running one build per
 platform is what actually verifies each of those deleted-elsewhere branches
 compiles correctly somewhere.
 
+## 🔀 See this in another language
+
+- [PowerShell — 03 · Cross-Platform PowerShell](https://sigilipelli.github.io/powershell-mastery-path/level-4/03-cross-platform/)
+
 ## Exercise
 
 Make the [task processor](../level-3/10-project-task-processor.md) genuinely

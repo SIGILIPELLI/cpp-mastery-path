@@ -430,3 +430,7 @@ reference to a destroyed queue) once the pool object itself is gone.
   CPU-bound or I/O-bound.
 
 Completing this project means you're ready for **Level 4 · Master**.
+
+## 🔀 See this in another language
+
+- [C — 10 · Project — Multi-threaded Key-Value Store / Tiny HTTP Server](https://sigilipelli.github.io/c-mastery-path/level-3/10-project-kv-store/)

@@ -346,6 +346,10 @@ other's count above zero forever (a real memory leak, since neither count
 ever reaches 0), so one side holds a `weak_ptr` instead, which doesn't
 contribute to the count and lets the cycle actually be collected.
 
+## 🔀 See this in another language
+
+- [Rust — 07 · Smart Pointers (Box, Rc, RefCell)](https://sigilipelli.github.io/rust-mastery-path/level-2/07-smart-pointers/)
+
 ## Exercise
 
 Model a small file system tree. A `Directory` owns a

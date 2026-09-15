@@ -330,6 +330,10 @@ restore, can turn a full rebuild into a near-instant one: nothing changed
 about the actual bytes fed to the compiler, so the cache key matches
 exactly, even though the source files changed identity on disk.
 
+## 🔀 See this in another language
+
+- [C — 09 · Build Systems at Scale](https://sigilipelli.github.io/c-mastery-path/level-4/09-build-systems-at-scale/)
+
 ## Exercise
 
 Convert the [Level 3 task processor](../level-3/10-project-task-processor.md)

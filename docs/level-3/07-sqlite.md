@@ -254,6 +254,10 @@ a read of a fixed-size block (commonly 4096 bytes) directly from that file,
 which SQLite also caches in memory to avoid repeated disk I/O for
 frequently-accessed pages.
 
+## 🔀 See this in another language
+
+- [PowerShell — 03 · Working with .NET from PowerShell](https://sigilipelli.github.io/powershell-mastery-path/level-3/03-working-with-dotnet/)
+
 ## Exercise
 
 Wrap a prepared statement in an RAII class `Statement` (constructor calls

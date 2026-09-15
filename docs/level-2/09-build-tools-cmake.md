@@ -372,6 +372,10 @@ and the OS's dynamic loader resolves and maps the actual library code into
 your process's address space at *program startup*, so multiple running
 programs can share one copy of the library in physical memory).
 
+## 🔀 See this in another language
+
+- [Java — 08 · Build Tools Deep Dive](https://sigilipelli.github.io/java-mastery-path/level-2/08-build-tools/)
+
 ## Exercise
 
 Convert the Bank Account CLI from

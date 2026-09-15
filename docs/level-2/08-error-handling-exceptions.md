@@ -415,6 +415,12 @@ of unwinding, and the compiler can skip generating unwinding tables for
 if it's marked `noexcept`; otherwise it falls back to copying, to preserve
 the strong exception guarantee during growth.
 
+## 🔀 See this in another language
+
+- [JavaScript — 07 · Error Handling Advanced](https://sigilipelli.github.io/javascript-mastery-path/level-2/07-error-handling-advanced/)
+- [C — 06 · Error Handling Conventions](https://sigilipelli.github.io/c-mastery-path/level-2/06-error-handling/)
+- [Rust — 05 · Error Handling Advanced](https://sigilipelli.github.io/rust-mastery-path/level-2/05-error-handling-advanced/)
+
 ## Exercise
 
 Build an exception hierarchy for a configuration loader.
