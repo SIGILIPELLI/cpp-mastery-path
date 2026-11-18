@@ -180,9 +180,9 @@ O(1) lookup, not a scan.
 
 ## 🔀 See this in another language
 
-- [C# — Collections](https://sigilipelli.github.io/csharp-mastery-path/level-1/06-collections/)
-- [Kotlin — Null Safety Basics](https://sigilipelli.github.io/kotlin-mastery-path/level-1/06-null-safety/)
-- [Shell/Bash — Working with Files & Directories](https://sigilipelli.github.io/shell-mastery-path/level-1/06-files-directories/)
+- [C# — Collections](https://learnmasterypath.com/csharp-mastery-path/level-1/06-collections/)
+- [Kotlin — Null Safety Basics](https://learnmasterypath.com/kotlin-mastery-path/level-1/06-null-safety/)
+- [Shell/Bash — Working with Files & Directories](https://learnmasterypath.com/shell-mastery-path/level-1/06-files-directories/)
 
 ## Exercise
 

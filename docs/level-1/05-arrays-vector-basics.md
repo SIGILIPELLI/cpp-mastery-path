@@ -169,9 +169,9 @@ why a pointer or iterator into a vector can be silently invalidated by a
 
 ## 🔀 See this in another language
 
-- [C# — Classes & Objects](https://sigilipelli.github.io/csharp-mastery-path/level-1/05-classes-objects/)
-- [Kotlin — Classes & Objects Basics](https://sigilipelli.github.io/kotlin-mastery-path/level-1/05-classes-objects/)
-- [Shell/Bash — Functions & Arguments](https://sigilipelli.github.io/shell-mastery-path/level-1/05-functions-arguments/)
+- [C# — Classes & Objects](https://learnmasterypath.com/csharp-mastery-path/level-1/05-classes-objects/)
+- [Kotlin — Classes & Objects Basics](https://learnmasterypath.com/kotlin-mastery-path/level-1/05-classes-objects/)
+- [Shell/Bash — Functions & Arguments](https://learnmasterypath.com/shell-mastery-path/level-1/05-functions-arguments/)
 
 ## Exercise
 

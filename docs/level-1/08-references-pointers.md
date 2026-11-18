@@ -179,9 +179,9 @@ every platform because address `0` is deliberately left unmapped by the OS.
 
 ## 🔀 See this in another language
 
-- [C# — LINQ Basics](https://sigilipelli.github.io/csharp-mastery-path/level-1/08-linq-basics/)
-- [Kotlin — Data Classes](https://sigilipelli.github.io/kotlin-mastery-path/level-1/08-data-classes/)
-- [Shell/Bash — Basic Text Processing](https://sigilipelli.github.io/shell-mastery-path/level-1/08-text-processing/)
+- [C# — LINQ Basics](https://learnmasterypath.com/csharp-mastery-path/level-1/08-linq-basics/)
+- [Kotlin — Data Classes](https://learnmasterypath.com/kotlin-mastery-path/level-1/08-data-classes/)
+- [Shell/Bash — Basic Text Processing](https://learnmasterypath.com/shell-mastery-path/level-1/08-text-processing/)
 
 ## Exercise
 

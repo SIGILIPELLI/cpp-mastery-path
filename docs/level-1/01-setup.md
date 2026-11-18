@@ -140,9 +140,9 @@ like a JVM or CLR sits underneath.
 
 ## 🔀 See this in another language
 
-- [C# — What Is C# & .NET?](https://sigilipelli.github.io/csharp-mastery-path/level-1/01-what-is-csharp-dotnet/)
-- [Kotlin — Setup & First Program](https://sigilipelli.github.io/kotlin-mastery-path/level-1/01-setup/)
-- [Shell/Bash — Setup & First Script](https://sigilipelli.github.io/shell-mastery-path/level-1/01-setup/)
+- [C# — What Is C# & .NET?](https://learnmasterypath.com/csharp-mastery-path/level-1/01-what-is-csharp-dotnet/)
+- [Kotlin — Setup & First Program](https://learnmasterypath.com/kotlin-mastery-path/level-1/01-setup/)
+- [Shell/Bash — Setup & First Script](https://learnmasterypath.com/shell-mastery-path/level-1/01-setup/)
 
 ## Exercise
 

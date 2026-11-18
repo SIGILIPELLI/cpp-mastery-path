@@ -185,9 +185,9 @@ caller's original memory with no copy at all.
 
 ## 🔀 See this in another language
 
-- [C# — Methods & Functions](https://sigilipelli.github.io/csharp-mastery-path/level-1/04-methods-functions/)
-- [Kotlin — Functions](https://sigilipelli.github.io/kotlin-mastery-path/level-1/04-functions/)
-- [Shell/Bash — Loops](https://sigilipelli.github.io/shell-mastery-path/level-1/04-loops/)
+- [C# — Methods & Functions](https://learnmasterypath.com/csharp-mastery-path/level-1/04-methods-functions/)
+- [Kotlin — Functions](https://learnmasterypath.com/kotlin-mastery-path/level-1/04-functions/)
+- [Shell/Bash — Loops](https://learnmasterypath.com/shell-mastery-path/level-1/04-loops/)
 
 ## Exercise
 

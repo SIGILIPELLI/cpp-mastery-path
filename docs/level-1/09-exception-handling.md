@@ -186,9 +186,9 @@ derived exception object, losing any derived-specific data and dispatch.
 
 ## 🔀 See this in another language
 
-- [C# — File I/O & Working with Text](https://sigilipelli.github.io/csharp-mastery-path/level-1/09-file-io/)
-- [Kotlin — Extension Functions Intro](https://sigilipelli.github.io/kotlin-mastery-path/level-1/09-extension-functions/)
-- [Shell/Bash — Exit Codes & Basic Error Handling](https://sigilipelli.github.io/shell-mastery-path/level-1/09-exit-codes-error-handling/)
+- [C# — File I/O & Working with Text](https://learnmasterypath.com/csharp-mastery-path/level-1/09-file-io/)
+- [Kotlin — Extension Functions Intro](https://learnmasterypath.com/kotlin-mastery-path/level-1/09-extension-functions/)
+- [Shell/Bash — Exit Codes & Basic Error Handling](https://learnmasterypath.com/shell-mastery-path/level-1/09-exit-codes-error-handling/)
 
 ## Exercise
 

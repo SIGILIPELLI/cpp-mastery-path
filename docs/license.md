@@ -21,7 +21,7 @@ You are free to:
 
 **No permission needed, no fee, no login required.** The only condition is
 attribution — credit "C++ Mastery Path" (or the wider [Mastery Path
-series](https://sigilipelli.github.io/cpp-mastery-path/)) and link back to the
+series](https://learnmasterypath.com/cpp-mastery-path/)) and link back to the
 original page.
 
 ## Code snippets

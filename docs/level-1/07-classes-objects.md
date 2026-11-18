@@ -238,9 +238,9 @@ dispatch is otherwise the same keyword-for-keyword.
 
 ## 🔀 See this in another language
 
-- [C# — Exception Handling](https://sigilipelli.github.io/csharp-mastery-path/level-1/07-exception-handling/)
-- [Kotlin — Collections](https://sigilipelli.github.io/kotlin-mastery-path/level-1/07-collections/)
-- [Shell/Bash — Pipes & Redirection](https://sigilipelli.github.io/shell-mastery-path/level-1/07-pipes-redirection/)
+- [C# — Exception Handling](https://learnmasterypath.com/csharp-mastery-path/level-1/07-exception-handling/)
+- [Kotlin — Collections](https://learnmasterypath.com/kotlin-mastery-path/level-1/07-collections/)
+- [Shell/Bash — Pipes & Redirection](https://learnmasterypath.com/shell-mastery-path/level-1/07-pipes-redirection/)
 
 ## Exercise
 

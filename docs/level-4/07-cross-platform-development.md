@@ -333,7 +333,7 @@ compiles correctly somewhere.
 
 ## 🔀 See this in another language
 
-- [PowerShell — 03 · Cross-Platform PowerShell](https://sigilipelli.github.io/powershell-mastery-path/level-4/03-cross-platform/)
+- [PowerShell — 03 · Cross-Platform PowerShell](https://learnmasterypath.com/powershell-mastery-path/level-4/03-cross-platform/)
 
 ## Exercise
 

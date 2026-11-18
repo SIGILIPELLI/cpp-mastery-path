@@ -226,6 +226,6 @@ Completing this project means you're ready for **Level 2 · Intermediate**.
 
 ## 🔀 See this in another language
 
-- [C# — Project — Console Task Manager App](https://sigilipelli.github.io/csharp-mastery-path/level-1/10-project-task-manager/)
-- [Kotlin — Project — CLI To-Do App](https://sigilipelli.github.io/kotlin-mastery-path/level-1/10-project-todo-app/)
-- [Shell/Bash — Project — Backup Script](https://sigilipelli.github.io/shell-mastery-path/level-1/10-project-backup-script/)
+- [C# — Project — Console Task Manager App](https://learnmasterypath.com/csharp-mastery-path/level-1/10-project-task-manager/)
+- [Kotlin — Project — CLI To-Do App](https://learnmasterypath.com/kotlin-mastery-path/level-1/10-project-todo-app/)
+- [Shell/Bash — Project — Backup Script](https://learnmasterypath.com/shell-mastery-path/level-1/10-project-backup-script/)

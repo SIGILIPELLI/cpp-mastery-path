@@ -332,7 +332,7 @@ exactly, even though the source files changed identity on disk.
 
 ## 🔀 See this in another language
 
-- [C — 09 · Build Systems at Scale](https://sigilipelli.github.io/c-mastery-path/level-4/09-build-systems-at-scale/)
+- [C — 09 · Build Systems at Scale](https://learnmasterypath.com/c-mastery-path/level-4/09-build-systems-at-scale/)
 
 ## Exercise
 

@@ -256,7 +256,7 @@ frequently-accessed pages.
 
 ## 🔀 See this in another language
 
-- [PowerShell — 03 · Working with .NET from PowerShell](https://sigilipelli.github.io/powershell-mastery-path/level-3/03-working-with-dotnet/)
+- [PowerShell — 03 · Working with .NET from PowerShell](https://learnmasterypath.com/powershell-mastery-path/level-3/03-working-with-dotnet/)
 
 ## Exercise
 

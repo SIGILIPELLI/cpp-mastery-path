@@ -433,4 +433,4 @@ Completing this project means you're ready for **Level 4 · Master**.
 
 ## 🔀 See this in another language
 
-- [C — 10 · Project — Multi-threaded Key-Value Store / Tiny HTTP Server](https://sigilipelli.github.io/c-mastery-path/level-3/10-project-kv-store/)
+- [C — 10 · Project — Multi-threaded Key-Value Store / Tiny HTTP Server](https://learnmasterypath.com/c-mastery-path/level-3/10-project-kv-store/)

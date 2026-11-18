@@ -348,7 +348,7 @@ contribute to the count and lets the cycle actually be collected.
 
 ## 🔀 See this in another language
 
-- [Rust — 07 · Smart Pointers (Box, Rc, RefCell)](https://sigilipelli.github.io/rust-mastery-path/level-2/07-smart-pointers/)
+- [Rust — 07 · Smart Pointers (Box, Rc, RefCell)](https://learnmasterypath.com/rust-mastery-path/level-2/07-smart-pointers/)
 
 ## Exercise
 
