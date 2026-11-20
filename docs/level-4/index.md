@@ -1,3 +1,7 @@
+---
+description: "Level 4 (Master) of the free C++ Mastery Path: Modern C++ Features (C++17/20), Advanced Concurrency, Compile-time Computation, Systems Programming Patterns…"
+---
+
 # Level 4 · Master
 
 ## Modules

@@ -1,3 +1,7 @@
+---
+description: "Level 2 (Intermediate) of the free C++ Mastery Path: OOP Deep Dive, Templates Basics, STL Containers, STL Algorithms & Iterators, Operator Overloading…"
+---
+
 # Level 2 · Intermediate
 
 ## Modules

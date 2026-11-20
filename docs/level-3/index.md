@@ -1,3 +1,7 @@
+---
+description: "Level 3 (Advanced) of the free C++ Mastery Path: Advanced Templates, Move Semantics & Rvalue References, Concurrency, RAII Deep Dive, Design Patterns in…"
+---
+
 # Level 3 · Advanced
 
 ## Modules
