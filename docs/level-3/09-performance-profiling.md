@@ -297,8 +297,8 @@ ships to users at all.
 
 ## 🔀 See this in another language
 
-- [Python — 10 · Profiling & Performance](https://learnmasterypath.com/python-mastery-path/level-3/10-profiling-performance/)
-- [Java — 10 · Performance Profiling & Optimization](https://learnmasterypath.com/java-mastery-path/level-3/10-profiling-optimization/)
+- [Python — 10 · Profiling & Performance](https://learnmasterypath.com/python-mastery-path/level-3/09-profiling-performance/)
+- [Java — 10 · Performance Profiling & Optimization](https://learnmasterypath.com/java-mastery-path/level-3/09-jvm-internals-gc-profiling-optimization/#part-2-performance-profiling-optimization)
 - [Ruby — 06 · Performance & Profiling](https://learnmasterypath.com/ruby-mastery-path/level-3/06-performance-profiling/)
 
 ## Exercise
